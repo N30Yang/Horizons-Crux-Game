@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bsajha34wgslw"]
 
 [ext_resource type="Script" uid="uid://644agwul1uvb" path="res://character_selector.gd" id="1_eod3x"]
+[ext_resource type="Texture2D" uid="uid://dqoehify6nbmc" path="res://Assets/Male-Character-Spritesheet.png" id="2_7itap"]
 
 [node name="Control" type="Control" unique_id=1319880984]
 layout_mode = 3
@@ -13,7 +14,13 @@ script = ExtResource("1_eod3x")
 
 [node name="TextureButton" type="TextureButton" parent="." unique_id=678575039]
 layout_mode = 0
-offset_right = 265.0
-offset_bottom = 167.0
+offset_left = -13.0
+offset_top = 13.0
+offset_right = 252.0
+offset_bottom = 180.0
+
+[node name="MaleCharacterSpritesheet" type="Sprite2D" parent="." unique_id=107527731]
+position = Vector2(110, 81)
+texture = ExtResource("2_7itap")
 
 [connection signal="pressed" from="TextureButton" to="." method="_on_texture_button_pressed"]

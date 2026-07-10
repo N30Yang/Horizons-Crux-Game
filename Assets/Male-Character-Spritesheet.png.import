@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://corr8cnwcf3la"
-path="res://.godot/imported/Asset 5.png-20d0f4d59f93afb94cfece6e44bbcd40.ctex"
+uid="uid://dqoehify6nbmc"
+path="res://.godot/imported/Male-Character-Spritesheet.png-f308b16e8b75e77cc6f7a0cec942b74d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://UI/Asset 5.png"
-dest_files=["res://.godot/imported/Asset 5.png-20d0f4d59f93afb94cfece6e44bbcd40.ctex"]
+source_file="res://Assets/Male-Character-Spritesheet.png"
+dest_files=["res://.godot/imported/Male-Character-Spritesheet.png-f308b16e8b75e77cc6f7a0cec942b74d.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

@@ -26,5 +26,6 @@ func _on_voice_power(power_key: String) -> void:
 
 
 func _on_timer_timeout() -> void:
-	
+	tornado.play("default")
+	tornado.position = Vector2(tornado.position.y,tornado.position.y)
 	pass # Replace with function body.
