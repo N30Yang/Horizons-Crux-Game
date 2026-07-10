@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://bsxpfog03r6ya"]
+
+[ext_resource type="Script" uid="uid://b6avpqngxc0bg" path="res://menu.gd" id="1_dolsu"]
+[ext_resource type="Texture2D" path="res://logo.png" id="2_5yleq"]
+[ext_resource type="Texture2D" path="res://Asset 6.png" id="3_dolsu"]
+[ext_resource type="Texture2D" path="res://Asset 7.png" id="4_n4eug"]
+[ext_resource type="Texture2D" path="res://Asset 8.png" id="5_dlksc"]
+
+[node name="StartMenu" type="Control" unique_id=1125722841]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dolsu")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1826597614]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.94509804, 0.7607843, 0.49019608, 1)
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=131070778]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -180.0
+offset_bottom = 424.97937
+grow_horizontal = 2
+texture = ExtResource("2_5yleq")
+expand_mode = 5
+
+[node name="StartButton" type="TextureButton" parent="." unique_id=1220043898]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 428.0
+offset_top = -530.0
+offset_right = 796.0
+offset_bottom = -261.0
+grow_vertical = 0
+texture_normal = ExtResource("3_dolsu")
+ignore_texture_size = true
+stretch_mode = 4
+
+[node name="MenuButton" type="TextureButton" parent="." unique_id=2084182008]
+layout_mode = 0
+offset_left = 163.0
+offset_top = 287.0
+offset_right = 465.0
+offset_bottom = 510.0
+texture_normal = ExtResource("4_n4eug")
+ignore_texture_size = true
+stretch_mode = 4
+
+[node name="QuitButton" type="TextureButton" parent="." unique_id=515156906]
+layout_mode = 0
+offset_left = 705.0
+offset_top = 286.0
+offset_right = 1061.0
+offset_bottom = 517.0
+texture_normal = ExtResource("5_dlksc")
+ignore_texture_size = true
+stretch_mode = 4
+
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]

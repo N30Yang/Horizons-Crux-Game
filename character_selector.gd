@@ -1,5 +1,9 @@
 extends Control
 
+#set constants like
+# const KNIGHT_PATH = "res"
+# const IMAGE_PATH = ""
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

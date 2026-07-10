@@ -11,12 +11,7 @@
 
 extends Node
 
-# --- Signals -----------------------------------------------------------------
-signal power_triggered(power_key: String) # "Q" / "W" / "E" / "R"
-signal listening_started()
-signal listening_stopped()
-signal text_recognized(text: String)
-signal recognition_failed(reason: String)
+
 
 # --- Config ------------------------------------------------------------------
 const CONFIG_PATH := "res://voice_config.json"
