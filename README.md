@@ -5,8 +5,9 @@
 The World is industrial and dying, no green left anywhere. Somehow one tree survived. You and other players get powers from god — no explanation — to protect it. Enemies come for it. You defend it together.
 
 ## Game Mechanics
-The fun thing about this game, is you use your voice to play! There are trigger words that are picked up by our system that trigger different events
+The fun thing about this game, is you use your voice to play! There are trigger words that are picked up by our system that trigger different events.
 The words are: <br>
+
 W — Shapeshift: shapeshift, dragon, transform, morph <br>
 E — Flight: flight, fly, ascend, rise, up <br>
 Q — 4th Wall: wall, break, glitch, reality <br>
