@@ -27,6 +27,9 @@ scale = Vector2(0.17956349, 0.9661134)
 sprite_frames = SubResource("SpriteFrames_ilkqt")
 
 [node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
+position = Vector2(1365, 33)
+scale = Vector2(0.35813493, 0.4571231)
+texture = ExtResource("2_rpqi1")
 
 [node name="Timer" type="Timer" parent="." unique_id=1942069986]
 wait_time = 5.0
