@@ -1,9 +1,3 @@
-# =============================================================================
-# VoiceInputManager.gd
-# Voice-activated power system for "The Last One" (Godot 4.x, HTML5 export)
-# =============================================================================
-#
-# SETUP (hackathon-fast):
 #   1. Add this script to an autoload/singleton node named "VoiceInput"
 #      (Project > Project Settings > Autoload). Or drop as a Node in your scene.
 #   2. Place voice_config.json next to your project (res://voice_config.json)
@@ -14,16 +8,11 @@
 #          VoiceInput.power_triggered.connect(_on_power)
 #      then call VoiceInput.start_listening() (e.g. on a keypress).
 #
-# BROWSER ONLY: Web Speech API exists only in HTML5 exports (Chrome/Edge best).
-# In the editor / native builds, voice is disabled but the DEBUG keyboard panel
-# (Shift+V) and Q/W/E/R fallback still work, so you can test power logic.
-#
-# =============================================================================
 
 extends Node
 
 # --- Signals -----------------------------------------------------------------
-signal power_triggered(power_key: String)   # "Q" / "W" / "E" / "R"
+signal power_triggered(power_key: String) # "Q" / "W" / "E" / "R"
 signal listening_started()
 signal listening_stopped()
 signal text_recognized(text: String)
@@ -31,9 +20,9 @@ signal recognition_failed(reason: String)
 
 # --- Config ------------------------------------------------------------------
 const CONFIG_PATH := "res://voice_config.json"
-const SPEECH_TIMEOUT_MS := 10000  # overwritten by config if present
+const SPEECH_TIMEOUT_MS := 10000 # overwritten by config if present
 
-var confidence_threshold: float = 0.70   # 0.0 - 1.0
+var confidence_threshold: float = 0.70 # 0.0 - 1.0
 var fuzzy_max_distance: int = 2
 
 # power_key -> { "name": String, "keywords": Array[String] }
@@ -41,7 +30,7 @@ var _powers: Dictionary = {}
 
 # --- JS bridge state ---------------------------------------------------------
 var _js_available: bool = false
-var _js_callback_ref = null        # keep JS callback alive (GC guard)
+var _js_callback_ref = null # keep JS callback alive (GC guard)
 var _is_listening: bool = false
 var _timeout_timer: Timer = null
 
