@@ -53,7 +53,10 @@ var tree_health: int = MAX_HEALTH
 var tornado_moving: bool = false
 var tornado_hit: bool = false
 var tornado_deflected: bool = false
+var tornado_erasing: bool = false  # frozen mid fourth-wall erase
 var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
+
+var erase_active: bool = false  # only ONE pencil+eraser can exist at a time
 # Burning person: runs in from a side, torches the tree on contact.
 var runner_moving: bool = false
 var runner_hit: bool = false
@@ -126,7 +129,7 @@ func _process(delta: float) -> void:
 	_update_volume_meter(delta)
 	_update_bomber_hp_bar()
 
-	if tornado_moving:
+	if tornado_moving and not tornado_erasing:
 		tornado.position.x += tornado_speed * delta * tornado_dir
 		if tornado.position.x > get_viewport_rect().size.x + 300 or tornado.position.x < -300:
 			tornado_moving = false
@@ -165,7 +168,7 @@ func _process(delta: float) -> void:
 			bomb_dropping = false
 			bomb.visible = false
 
-	if runner_moving:
+	if runner_moving and not runner_erasing:
 		runner.position.x += runner_speed * delta * runner_dir
 		# Damage now fires via Runner/Hurtbox overlapping Tree/Hitbox
 		# (_on_tree_hitbox_entered). Just clean up if it somehow runs past.
@@ -392,15 +395,26 @@ func launch_runner() -> void:
 # FOURTH WALL power ("erase"/"destroy"/"obliterate"). erase the runner if hes
 # around, otherwise scribble the bomber n take half its hp.
 func erase_power() -> void:
+	# only one pencil+eraser at a time, or it gets messy/broken
+	if erase_active:
+		return
+	# priority: runner -> tornado -> bomber. freeze the target so the timer
+	# cant relaunch/clobber it, hide it (or dmg the plane) when the fx ends.
 	if runner_moving and not runner_hit:
-		runner_hit = true
-		runner_moving = false
-		runner_erasing = true  # keep the timer from relaunching him mid-erase
+		erase_active = true
+		runner_erasing = true
+		runner_hit = true  # block tree-collision dmg while frozen
 		_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
 		print("[GAME] Fourth wall: runner erased!")
+	elif tornado_moving and not tornado_hit:
+		erase_active = true
+		tornado_erasing = true
+		tornado_hit = true
+		_fourth_wall_fx(tornado, true, 31, 2.3, 1.4)
+		print("[GAME] Fourth wall: tornado erased!")
 	elif plane_moving:
-		# freeze the bomber for the whole ~5s attack; dmg lands at the end.
-		plane_frozen = true
+		erase_active = true
+		plane_frozen = true  # freeze the bomber for the whole ~5s attack
 		_fourth_wall_fx(plane, false, 75, 3.4, 1.6)
 		print("[GAME] Fourth wall: bomber scribbled for half hp!")
 	else:
@@ -462,14 +476,23 @@ func _fourth_wall_fx(target: Node2D, erase_target: bool, steps: int, draw_time: 
 	tw.tween_callback(func() -> void:
 		scrib.queue_free()
 		eraser.queue_free()
-		if erase_target:
-			target.visible = false
-			target.modulate = Color.WHITE
-			runner_erasing = false  # ok to spawn runners again
+		if target == runner:
+			runner.visible = false
+			runner.modulate = Color.WHITE
+			runner_moving = false
+			runner_hit = false
+			runner_erasing = false
+		elif target == tornado:
+			tornado.visible = false
+			tornado.modulate = Color.WHITE
+			tornado_moving = false
+			tornado_hit = false
+			tornado_erasing = false
 		elif target == plane:
 			# bomber attack over: unfreeze n land the half-hp hit
 			plane_frozen = false
-			hit_bomber(bomber_max_health * 0.5))
+			hit_bomber(bomber_max_health * 0.5)
+		erase_active = false)
 
 # reveal the squiggle up to the pencil's current spot
 func _pencil_draw(t: float, scrib: Line2D, pencil: Sprite2D, pts: Array) -> void:
