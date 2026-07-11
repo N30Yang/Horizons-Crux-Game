@@ -15,12 +15,6 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_u0f01"]
 radius = 212.39078
 
-[sub_resource type="RectangleShape2D" id="rect_bomb"]
-size = Vector2(16, 16)
-
-[sub_resource type="RectangleShape2D" id="rect_tree"]
-size = Vector2(74.38605, 116.38255)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
 animations = [{
 "frames": [{
@@ -37,9 +31,6 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
-
-[sub_resource type="RectangleShape2D" id="rect_tornado"]
-size = Vector2(24, 48)
 
 [sub_resource type="AtlasTexture" id="evil_0"]
 atlas = ExtResource("11_evil")
@@ -106,13 +97,13 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("evil_7")
-}, {
-"duration": 1.0,
 "texture": SubResource("evil_2")
 }, {
 "duration": 1.0,
 "texture": SubResource("evil_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_7")
 }],
 "loop": 0,
 "name": &"boom",
@@ -161,25 +152,27 @@ scale = Vector2(1, 2)
 shape = SubResource("CircleShape2D_u0f01")
 
 [node name="Bomb" type="Sprite2D" parent="." unique_id=1451402138]
-visible = false
-position = Vector2(1365, 33)
+position = Vector2(1349, -73)
 scale = Vector2(3, 3)
 texture = ExtResource("6_0iob3")
 
 [node name="Hurtbox" type="Area2D" parent="Bomb" unique_id=1931227466]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Bomb/Hurtbox" unique_id=1336216097]
-shape = SubResource("rect_bomb")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Bomb/Hurtbox" unique_id=1749876145]
+polygon = PackedVector2Array(6.6666565, -2, 6.6666565, 7.666666, 1.6666565, 11.333334, -2.666687, 8.333334, -2, -1.666666, -0.666687, -5.666666, -4, -8.333334, -4, -15.333334, 7.6666565, -15.666666, 8.333313, -8.000002, 5.6666565, -5.666666)
 
 [node name="Jet" type="Sprite2D" parent="." unique_id=1451402140]
-visible = false
-position = Vector2(1500, 33)
+position = Vector2(1764, 106)
 scale = Vector2(4, 4)
 texture = ExtResource("5_4b75m")
 
+[node name="Hurtbox" type="Area2D" parent="Jet" unique_id=598783588]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Jet/Hurtbox" unique_id=701345056]
+polygon = PackedVector2Array(-28.5, 7, -7.75, 7.25, -3.25, 9, 5.5, 9, 8.5, 7, 13.25, 6.75, 15.75, 7.75, 27.25, 7.5, 29.5, 4.5, 25.25, -2.25, 29.25, -12.25, 23.5, -12.75, 16.75, -1, 4.25, -1.75, -3.5, -5.5, -15.75, -5.5, -32.5, 2.75)
+
 [node name="Rocket" type="Sprite2D" parent="." unique_id=1451402141]
-visible = false
-position = Vector2(1500, 33)
+position = Vector2(1444, -134)
 scale = Vector2(3, 3)
 texture = ExtResource("6_0iob3")
 
@@ -196,11 +189,9 @@ texture = ExtResource("7_tree")
 
 [node name="Hitbox" type="Area2D" parent="Tree" unique_id=1203150290]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Tree/Hitbox" unique_id=2064812703]
-position = Vector2(12.422073, 25.50412)
-rotation = 0.014753345
-scale = Vector2(0.9999994, 0.9999994)
-shape = SubResource("rect_tree")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Tree/Hitbox" unique_id=1917960600]
+position = Vector2(-8.400001, -35.200012)
+polygon = PackedVector2Array(18.40001, -4.7999954, 18.800003, -4.7999954, 34, -3.199997, 50, 4.4000015, 68, 22, 69.600006, 32.399994, 44.399994, 41.600006, 32, 62.800003, 38.799988, 99.59999, 52.399994, 110, 17.199997, 114.399994, -25.199997, 117.2, -3.199997, 91.59999, 4.400009, 62, -27.199997, 40.399994, -38.799988, 41.199997, -41.59999, 13.600006, -16.399994, 2, 5.600006, -4.399994)
 
 [node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
 position = Vector2(-202.99994, 287)
@@ -209,18 +200,24 @@ sprite_frames = SubResource("SpriteFrames_ilkqt")
 
 [node name="Hurtbox" type="Area2D" parent="Tornado" unique_id=178034867]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Tornado/Hurtbox" unique_id=1751842093]
-shape = SubResource("rect_tornado")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Tornado/Hurtbox" unique_id=1025892280]
+polygon = PackedVector2Array(-10.250008, -12, 7.3749924, -14, 10.999992, -11, 3.9999924, 0.25, 0.9999924, 14.125, -3.0000076, 9.875, -6.2500076, -1.125, -11.000008, -7.75)
+
+[node name="Runner" type="AnimatedSprite2D" parent="." unique_id=1339268230]
+position = Vector2(-114.99999, 513.99994)
+scale = Vector2(3.5, 3.5)
+sprite_frames = SubResource("SpriteFrames_runner")
+animation = &"run_left"
+
+[node name="Hurtbox" type="Area2D" parent="Runner" unique_id=1560676076]
+scale = Vector2(0.99999994, 0.99999994)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Runner/Hurtbox" unique_id=1772248666]
+polygon = PackedVector2Array(-3.7142868, -17.142838, -4, -7.9999847, -2.5714302, -5.1428375, -4.57143, -2.5714111, -4.57143, 9.428589, -9.714287, 18.857162, -10.57143, 23.142868, 7.4285717, 22.857162, 9.142857, -20.571411, -2, -19.714272)
 
 [node name="Timer" type="Timer" parent="." unique_id=1942069986]
 wait_time = 5.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=104994087]
-
-[node name="Runner" type="AnimatedSprite2D" parent="." unique_id=1339268230]
-visible = false
-scale = Vector2(3.5, 3.5)
-sprite_frames = SubResource("SpriteFrames_runner")
-animation = &"boom"
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
