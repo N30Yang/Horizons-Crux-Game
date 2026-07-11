@@ -1,0 +1,9 @@
+res://MainScene.tscn
+res://Scenes/CharacterSelector.tscn
+res://Scenes/MainScene.tscn
+res://Scenes/Menu.tscn
+res://Scripts/World.gd
+res://Scenes/BookScene.tscn
+res://Scenes/fade.tscn
+res://Scripts/fade.gd
+res://Scripts/book_scene.gd
