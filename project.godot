@@ -29,7 +29,6 @@ VoiceInput="*uid://i2nhjsprpjcr"
 window/size/viewport_width=1208
 window/size/viewport_height=588
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [input]
 
@@ -65,8 +64,6 @@ consequence={
 
 [rendering]
 
-renderer/rendering_method="forward_plus"
-renderer/rendering_method.web="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 environment/defaults/default_clear_color=Color(0.05119451, 0.02405627, 0.0062726354, 1)

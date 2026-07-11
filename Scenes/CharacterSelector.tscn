@@ -2,7 +2,13 @@
 
 [ext_resource type="Script" uid="uid://644agwul1uvb" path="res://Scripts/character_selector.gd" id="1_eod3x"]
 [ext_resource type="PackedScene" uid="uid://dtcc6ue4vkrb3" path="res://Scenes/blondie.tscn" id="2_autqr"]
+[ext_resource type="Texture2D" uid="uid://rfihapa0vagc" path="res://Assets/BlondeL.png" id="3_owk3o"]
 [ext_resource type="PackedScene" uid="uid://bgyw1odvplrc" path="res://Scenes/brownie.tscn" id="3_wpy67"]
+[ext_resource type="Texture2D" uid="uid://cx5gefw1fu3bl" path="res://Assets/BlondeR.png" id="4_5gjr1"]
+[ext_resource type="Texture2D" uid="uid://b8x6v2qb1yexl" path="res://Assets/BlondeF.png" id="5_6xy5s"]
+[ext_resource type="Texture2D" uid="uid://dedquidgdugn0" path="res://Assets/BrownL.png" id="7_cdj8c"]
+[ext_resource type="Texture2D" uid="uid://c3xhepa1jr6qa" path="res://Assets/BrownR.png" id="8_2fjia"]
+[ext_resource type="Texture2D" uid="uid://buen7rpi7knps" path="res://Assets/BrownF.png" id="9_gld7j"]
 
 [node name="Control" type="Control" unique_id=1319880984]
 layout_mode = 3
@@ -19,16 +25,46 @@ offset_right = 1151.0
 offset_bottom = 651.0
 color = Color(0.94509804, 0.7607843, 0.49019608, 1)
 
+[node name="Label" type="Label" parent="." unique_id=1739623338]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -277.5
+offset_right = 277.5
+offset_bottom = 69.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.54901963, 0.3254902, 0.20392157, 1)
+theme_override_font_sizes/font_size = 50
+text = "Choose Your Character"
+
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1823254803]
 layout_mode = 0
-offset_right = 192.0
-offset_bottom = 96.0
+offset_left = 38.0
+offset_top = 26.0
+offset_right = 230.0
+offset_bottom = 122.0
 
 [node name="Blondie" parent="HBoxContainer" unique_id=1337620141 instance=ExtResource("2_autqr")]
 layout_mode = 2
 
+[node name="TextureButton" parent="HBoxContainer/Blondie" index="0" unique_id=2113631757]
+offset_right = 531.0
+texture_normal = ExtResource("3_owk3o")
+texture_pressed = ExtResource("4_5gjr1")
+texture_hover = ExtResource("5_6xy5s")
+
 [node name="Brownie" parent="HBoxContainer" unique_id=832205566 instance=ExtResource("3_wpy67")]
 layout_mode = 2
+
+[node name="TextureButton2" parent="HBoxContainer/Brownie" index="0" unique_id=1285723961]
+offset_left = 611.0
+offset_top = 219.0
+offset_right = 706.0
+offset_bottom = 393.0
+texture_normal = ExtResource("7_cdj8c")
+texture_pressed = ExtResource("8_2fjia")
+texture_hover = ExtResource("9_gld7j")
 
 [connection signal="pressed" from="HBoxContainer/Blondie/TextureButton" to="." method="_on_texture_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/Brownie/TextureButton2" to="." method="_on_texture_button_2_pressed"]
