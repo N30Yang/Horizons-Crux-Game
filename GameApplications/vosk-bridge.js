@@ -37,6 +37,14 @@
 		"repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce",
 		// --- fourth wall / erase (-> Q) ---
 		"erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove",
+		// --- movement (-> MOVE_LEFT / MOVE_RIGHT / JUMP / STOP) ---
+		"left", "west", "right", "east", "jump", "hop", "leap", "halt", "stay",
+		// --- shapeshift: named animal (-> BEAR/CAPYBARA/BLOBFISH/BIRD/HUMAN) ---
+		// NOTE: capybara/blobfish may not be in the small model's dictionary; if
+		// Vosk ignores them, use a substitute in-dictionary trigger word.
+		"bear", "capybara", "capy", "blobfish", "blob", "bird", "human", "person",
+		// --- shapeshift: random (-> SHAPESHIFT) ---
+		"shift", "change", "transform", "morph",
 		"[unk]"
 	];
 	var MODEL_URL = "vosk-model-small-en-us-0.15.tar.gz";

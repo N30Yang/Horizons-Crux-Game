@@ -265,12 +265,17 @@ func _on_rocket_area(area: Area2D, rnode: Sprite2D) -> void:
 			return
 
 
-# Wrap the plane's bare CollisionShape2D in an Area2D so rockets can hit it.
-# Idempotent: reuse an existing Plane/Hurtbox if the scene already has one.
+# Grab the plane/drone's hurtbox Area2D so rockets can hit it.
+# The scene provides one (Plane/Area2D holds the CollisionShape2D). Prefer that;
+# fall back to a legacy "Hurtbox" node or wrap a bare CollisionShape2D.
 func _setup_plane_hurtbox() -> void:
-	plane_hurtbox = plane.get_node_or_null("Hurtbox")
+	# Existing Area2D from the scene (drone swap nests the shape under it).
+	plane_hurtbox = plane.get_node_or_null("Hurtbox") as Area2D
+	if plane_hurtbox == null:
+		plane_hurtbox = plane.get_node_or_null("Area2D") as Area2D
 	if plane_hurtbox != null:
 		return
+	# Legacy fallback: no Area2D in the scene, wrap a bare CollisionShape2D.
 	plane_hurtbox = Area2D.new()
 	plane_hurtbox.name = "Hurtbox"
 	var old_cs := plane.get_node_or_null("CollisionShape2D")

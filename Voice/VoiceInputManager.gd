@@ -2,8 +2,8 @@
 #      (Project > Project Settings > Autoload). Or drop as a Node in your scene.
 #   2. Place voice_config.json next to your project (res://voice_config.json)
 #      or in user:// . Path is configurable via CONFIG_PATH below.
-#   3. Export for Web. Copy voice_bridge.html content into your HTML shell,
-#      OR load it as an iframe (see voice_bridge.html header for both options).
+#   3. Export for Web. The HTML shell must load vosk.js + vosk-bridge.js
+#      (see GameApplications/); that offline Vosk engine does the recognition.
 #   4. Connect the signals you care about:
 #          VoiceInput.power_triggered.connect(_on_power)
 #      then call VoiceInput.start_listening() (e.g. on a keypress).
@@ -40,10 +40,6 @@ const FALLBACK_KEYS := {
 	KEY_E: "E",
 	KEY_R: "R",
 }
-
-# --- Debug typed-input panel -------------------------------------------------
-var _debug_panel: Control = null
-var _debug_edit: LineEdit = null
 
 
 # =============================================================================
@@ -96,8 +92,18 @@ func _load_config() -> void:
 func _load_default_powers() -> void:
 	_powers = {
 		"W": {"name": "Shoot", "keywords": ["shoot", "shoots", "shot", "shots", "fire", "fired", "blast", "attack", "strike", "launch", "bang", "boom", "gun", "hit", "boot", "chute"]},
-		"E": {"name": "Deflect", "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce"]},
+		"E": {"name": "Deflect", "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "wall", "wind", "away", "back", "blow", "bounce"]},
 		"Q": {"name": "Fourth Wall", "keywords": ["erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove"]},
+		"MOVE_LEFT": {"name": "Move Left", "keywords": ["left", "west"]},
+		"MOVE_RIGHT": {"name": "Move Right", "keywords": ["right", "east"]},
+		"JUMP": {"name": "Jump", "keywords": ["jump", "hop", "leap"]},
+		"STOP": {"name": "Stop", "keywords": ["stop", "halt", "stay"]},
+		"BEAR": {"name": "Bear", "keywords": ["bear", "bare"]},
+		"CAPYBARA": {"name": "Capybara", "keywords": ["capybara", "capy"]},
+		"BLOBFISH": {"name": "Blobfish", "keywords": ["blobfish", "blob"]},
+		"BIRD": {"name": "Bird", "keywords": ["bird", "birdie"]},
+		"HUMAN": {"name": "Human", "keywords": ["human", "person"]},
+		"SHAPESHIFT": {"name": "Shapeshift Random", "keywords": ["shapeshift", "shift", "transform", "morph", "change"]},
 	}
 
 
@@ -110,7 +116,10 @@ func _setup_timeout_timer() -> void:
 
 
 # =============================================================================
-# JavaScript bridge (Web Speech API lives in voice_bridge.html / JS)
+# JavaScript bridge. Recognition itself lives in GameApplications/vosk-bridge.js
+# (offline Vosk), loaded by the HTML shell. Here we only wire Godot's result
+# callback into it: vosk-bridge.js pushes results to window.godotVoiceCallback
+# and Godot calls window.startVoiceRecognition() to boot the mic + recognizer.
 # =============================================================================
 func _setup_js_bridge() -> void:
 	if not Engine.has_singleton("JavaScriptBridge") and not _has_js():
@@ -118,155 +127,12 @@ func _setup_js_bridge() -> void:
 		return
 	_js_available = true
 
-	
-	JavaScriptBridge.eval(_BRIDGE_JS, true)
-
-	
 	_js_callback_ref = JavaScriptBridge.create_callback(_on_js_result)
 	var window = JavaScriptBridge.get_interface("window")
 	if window != null:
 		window.godotVoiceCallback = _js_callback_ref
 		JavaScriptBridge.eval("if (window.godotVoiceReady) window.godotVoiceReady();", true)
 
-
-# Full Web Speech API bridge, injected at runtime so it survives re-exports.
-const _BRIDGE_JS := """
-(function () {
-	if (window.__voiceBridgeInstalled) return;
-	window.__voiceBridgeInstalled = true;
-
-	function sendToGodot(obj) {
-		var json = JSON.stringify(obj);
-		if (typeof window.godotVoiceCallback === "function") {
-			try { window.godotVoiceCallback(json); }
-			catch (e) { console.warn("[voice_bridge] callback threw:", e); }
-		} else {
-			console.log("[voice_bridge] (no Godot callback yet):", json);
-		}
-	}
-
-	// Unlock audio on first user gesture (browser autoplay policy).
-	function resumeAudio() {
-		try {
-			var AC = window.AudioContext || window.webkitAudioContext;
-			if (AC) {
-				if (!window.__voiceAC) window.__voiceAC = new AC();
-				if (window.__voiceAC.state === "suspended") window.__voiceAC.resume();
-			}
-		} catch (e) {}
-	}
-	["pointerdown", "keydown", "touchstart"].forEach(function (evt) {
-		window.addEventListener(evt, resumeAudio, { once: false });
-	});
-
-	// --- Mic volume meter (own getUserMedia + AnalyserNode) ------------------
-	// Godot's AudioStreamMicrophone is silent on web, so measure RMS here and
-	// expose window.__voiceLevel (0..1). Godot polls it every frame.
-	window.__voiceLevel = 0.0;
-	function initMicMeter() {
-		if (window.__micMeterInit) return;
-		window.__micMeterInit = true;
-		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-		navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
-			var AC = window.AudioContext || window.webkitAudioContext;
-			if (!AC) return;
-			var ctx = window.__voiceAC || new AC();
-			window.__voiceAC = ctx;
-			var src = ctx.createMediaStreamSource(stream);
-			var an = ctx.createAnalyser();
-			an.fftSize = 512;
-			src.connect(an);
-			var buf = new Uint8Array(an.fftSize);
-			(function tick() {
-				an.getByteTimeDomainData(buf);
-				var sum = 0;
-				for (var i = 0; i < buf.length; i++) {
-					var v = (buf[i] - 128) / 128;
-					sum += v * v;
-				}
-				window.__voiceLevel = Math.sqrt(sum / buf.length);
-				requestAnimationFrame(tick);
-			})();
-		}).catch(function (e) {
-			console.warn("[voice_bridge] mic meter failed:", e);
-		});
-	}
-
-	var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-	var recognition = null;
-	var listening = false;
-	var gotResult = false;
-	var firedCounts = null; // word -> times already fired THIS utterance
-
-	// Fire each word occurrence as it appears. Count-based, not dedupe: if the
-	// interim grows "shoot" -> "shoot shoot" -> "shoot shoot shoot", each new
-	// occurrence fires. firedCounts only ever increases within an utterance
-	// (interim revisions that shrink the count fire nothing), and resets when
-	// the result finalizes so the next utterance starts fresh.
-	function streamWords(words) {
-		var seen = {};
-		for (var i = 0; i < words.length; i++) seen[words[i]] = (seen[words[i]] || 0) + 1;
-		for (var w in seen) {
-			var already = firedCounts[w] || 0;
-			for (var n = already; n < seen[w]; n++) {
-				sendToGodot({ type: "result", text: w, confidence: 1.0 });
-				gotResult = true;
-			}
-			if (seen[w] > already) firedCounts[w] = seen[w];
-		}
-	}
-
-	function buildRecognition() {
-		var r = new SR();
-		r.lang = "en-US";
-		r.interimResults = true;
-		r.maxAlternatives = 1;
-		r.continuous = true;
-		r.onstart = function () { listening = true; gotResult = false; firedCounts = {}; };
-		r.onresult = function (ev) {
-			var res = ev.results[ev.results.length - 1]; // newest result only
-			var words = res[0].transcript.toLowerCase().split(/[^a-z]+/).filter(Boolean);
-			streamWords(words);
-			if (res.isFinal) firedCounts = {}; // reset so next utterance re-fires
-		};
-		r.onerror = function (ev) {
-			console.warn("[voice_bridge] recognition error:", ev.error);
-			sendToGodot({ type: "error", reason: ev.error || "unknown" });
-		};
-		r.onend = function () {
-			listening = false;
-			if (!gotResult) sendToGodot({ type: "nomatch" });
-			sendToGodot({ type: "end" });
-		};
-		return r;
-	}
-
-	window.startVoiceRecognition = function () {
-		resumeAudio();
-		initMicMeter();
-		if (!SR) { sendToGodot({ type: "error", reason: "unsupported" }); return; }
-		if (listening) return;
-		if (!recognition) recognition = buildRecognition();
-		try {
-			recognition.start();
-		} catch (e) {
-			setTimeout(function () {
-				try { recognition.start(); }
-				catch (e2) { sendToGodot({ type: "error", reason: "start_failed" }); }
-			}, 120);
-		}
-	};
-
-	window.stopVoiceRecognition = function () {
-		if (recognition && listening) {
-			try { recognition.stop(); } catch (e) {}
-		}
-	};
-
-	window.godotVoiceReady = window.godotVoiceReady || function () {};
-	console.log("[voice_bridge] injected from GDScript. SpeechRecognition:", !!SR);
-})();
-"""
 
 
 func _has_js() -> bool:
@@ -321,8 +187,8 @@ func start_listening() -> void:
 		JavaScriptBridge.eval("if (window.startVoiceRecognition) window.startVoiceRecognition();", true)
 		_timeout_timer.start()
 	else:
-		# No browser speech: rely on keyboard. Still emit started so UI pulses.
-		push_warning("[VOICE] No Web Speech API. Use Shift+V debug panel or Q/W/E/R keys.")
+		# No JS bridge (native/editor): rely on keyboard. Still emit started so UI pulses.
+		push_warning("[VOICE] No JS bridge (Vosk runs on web export only). Use Q/W/E/R keys.")
 
 
 func stop_listening() -> void:
@@ -362,7 +228,7 @@ func _fail(reason: String) -> void:
 	match reason:
 		"timeout": msg = "No speech detected (10s timeout)."
 		"not-allowed", "permission": msg = "Microphone denied. Use keyboard (Q/W/E/R)."
-		"unsupported": msg = "Browser has no Web Speech API. Use keyboard."
+		"unsupported": msg = "Voice engine unavailable. Use keyboard."
 		"no_match": msg = "Heard you, but no power matched."
 	push_warning("[VOICE] Recognition failed: %s" % msg)
 
@@ -397,7 +263,7 @@ func _handle_recognized_text(text: String, speech_conf: float) -> void:
 		_fail("no_match")
 
 
-# Public so debug panel / tests can call it directly.
+# Public so tests can call it directly.
 # Returns { "power": String, "keyword": String, "confidence": float(0-1) }
 func match_text(text: String) -> Dictionary:
 	text = text.strip_edges().to_lower()
@@ -468,65 +334,11 @@ func _levenshtein(a: String, b: String) -> int:
 
 
 # =============================================================================
-# Input: fallback keys + debug panel toggle
+# Input: Q/W/E/R keyboard fallback (no mic).
 # =============================================================================
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		# Shift+V -> toggle debug typed-input panel.
-		if event.keycode == KEY_V and event.shift_pressed:
-			_toggle_debug_panel()
-			get_viewport().set_input_as_handled()
-			return
-
-		# Direct Q/W/E/R fallback (only when NOT typing in debug panel).
-		if _debug_panel == null or not _debug_panel.visible:
-			if FALLBACK_KEYS.has(event.keycode):
-				var pk: String = FALLBACK_KEYS[event.keycode]
-				print("[VOICE] Keyboard fallback -> Power: %s" % pk)
-				power_triggered.emit(pk)
-
-
-# =============================================================================
-# Debug typed-input panel (Shift+V). Type phrase, Enter -> treat as speech.
-# =============================================================================
-func _toggle_debug_panel() -> void:
-	if _debug_panel != null:
-		_debug_panel.visible = not _debug_panel.visible
-		if _debug_panel.visible:
-			_debug_edit.grab_focus()
-		return
-	_build_debug_panel()
-
-
-func _build_debug_panel() -> void:
-	var layer := CanvasLayer.new()
-	layer.layer = 128
-	add_child(layer)
-
-	_debug_panel = PanelContainer.new()
-	_debug_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
-	_debug_panel.position = Vector2(0, 20)
-	layer.add_child(_debug_panel)
-
-	var vbox := VBoxContainer.new()
-	_debug_panel.add_child(vbox)
-
-	var label := Label.new()
-	label.text = "[DEBUG VOICE]  type phrase, Enter to fire. Shift+V to close."
-	vbox.add_child(label)
-
-	_debug_edit = LineEdit.new()
-	_debug_edit.custom_minimum_size = Vector2(360, 0)
-	_debug_edit.placeholder_text = "e.g. dragn"
-	_debug_edit.text_submitted.connect(_on_debug_submitted)
-	vbox.add_child(_debug_edit)
-
-	_debug_edit.grab_focus()
-
-
-func _on_debug_submitted(text: String) -> void:
-	if text.strip_edges().is_empty():
-		return
-	print("[VOICE] (debug) simulating speech: \"%s\"" % text)
-	_handle_recognized_text(text, 1.0)
-	_debug_edit.clear()
+		if FALLBACK_KEYS.has(event.keycode):
+			var pk: String = FALLBACK_KEYS[event.keycode]
+			print("[VOICE] Keyboard fallback -> Power: %s" % pk)
+			power_triggered.emit(pk)
