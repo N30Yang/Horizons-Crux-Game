@@ -4,16 +4,30 @@ extends Node2D
 @onready var tornado: AnimatedSprite2D = $Tornado
 @onready var plane: Sprite2D = $Plane
 @onready var bomb: Sprite2D = $Bomb
+@onready var tree: Sprite2D = $Tree
 
 @export var tornado_speed: float = 175
 @export var plane_speed: float = 150
 @export var bomb_speed: float = 175
-# fraction of screen height where bomb lands (0.75 = bottom quadrant)
+
 @export var bomb_land_ratio: float = 0.75
-# fraction of screen height where tornado base sits (0.9 = bottom quadrant)
+
 @export var tornado_base_ratio: float = 0.9
 
+@export var hit_range: float = 120.0
+
+const TREE_STAGES := [
+	preload("res://Assets/Tree_DEAD.png"),       # 0 - dead
+	preload("res://Assets/Tree-Breaking_4.png"), # 1
+	preload("res://Assets/Tree-Breaking_3.png"), # 2
+	preload("res://Assets/Tree-Breaking_2.png"), # 3
+	preload("res://Assets/Tree-Normal.png"),     # 4 - fine
+]
+const MAX_HEALTH := 4
+var tree_health: int = MAX_HEALTH
+
 var tornado_moving: bool = false
+var tornado_hit: bool = false
 var plane_moving: bool = false
 var bomb_dropped: bool = false
 var bomb_dropping: bool = false
@@ -26,6 +40,9 @@ func _ready() -> void:
 	screen_middle = get_viewport_rect().size / 2
 	plane_start_x = plane.position.x
 	tornado_start_x = tornado.position.x
+
+	tree.position = Vector2(screen_middle.x, get_viewport_rect().size.y * bomb_land_ratio)
+	update_tree()
 	bomb.visible = false
 	tornado.visible = false
 	timer.start()
@@ -34,6 +51,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if tornado_moving:
 		tornado.position.x += tornado_speed * delta
+
+		if not tornado_hit and abs(tornado.position.x - tree.position.x) <= hit_range:
+			tornado_hit = true
+			damage_tree()
 		if tornado.position.x > get_viewport_rect().size.x + 100:
 			tornado_moving = false
 			tornado.visible = false
@@ -54,9 +75,12 @@ func _process(delta: float) -> void:
 			bomb_dropping = false
 			bomb.visible = false
 
+			if abs(bomb.position.x - tree.position.x) <= hit_range:
+				damage_tree()
+
 func drop_bomb() -> void:
 	bomb_dropped = true
-	# fall from bottom of plane
+
 	bomb.global_position = plane.global_position + Vector2(0, plane.get_rect().size.y * plane.scale.y * 0.5)
 	bomb.visible = true
 	bomb_dropping = true
@@ -79,12 +103,30 @@ func _on_voice_power(power_key: String) -> void:
 			pass # consequences()
 
 
+func damage_tree() -> void:
+	if tree_health <= 0:
+		return
+	tree_health -= 1
+	update_tree()
+	if tree_health <= 0:
+		print("[GAME] The tree has died.")
+
+func update_tree() -> void:
+	tree.texture = TREE_STAGES[tree_health]
+
 func _on_timer_timeout() -> void:
-	if not plane_moving:
+
+	var roll := randf()
+	if not plane_moving and roll < 0.7:
 		launch_plane()
-	if not tornado_moving:
+	if not tornado_moving and randf() < 0.7:
 		launch_tornado()
-	timer.wait_time = randf_range(3.0, 8.0)
+	if not plane_moving and not tornado_moving:
+		if randf() < 0.5:
+			launch_plane()
+		else:
+			launch_tornado()
+	timer.wait_time = randf_range(1.5, 6.0)
 
 func launch_plane() -> void:
 	plane.position.x = plane_start_x
@@ -96,7 +138,6 @@ func launch_plane() -> void:
 
 func launch_tornado() -> void:
 	tornado.position.x = tornado_start_x
-	# base (bottom of sprite) sits in bottom quadrant
 	var base_y := get_viewport_rect().size.y * tornado_base_ratio
 	var tex := tornado.sprite_frames.get_frame_texture(tornado.animation, tornado.frame)
 	var half_h := tex.get_height() * tornado.scale.y * 0.5
@@ -104,3 +145,4 @@ func launch_tornado() -> void:
 	tornado.visible = true
 	tornado.play()
 	tornado_moving = true
+	tornado_hit = false
