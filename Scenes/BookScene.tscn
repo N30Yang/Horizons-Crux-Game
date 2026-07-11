@@ -1,37 +1,20 @@
 [gd_scene format=3 uid="uid://c45ud55o4dasl"]
 
-[ext_resource type="Script" uid="uid://d0nhl0c06ortq" path="res://Scripts/World.gd" id="1_lej1j"]
-[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="3_7ksh1"]
-[ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="4_q4ag0"]
+[ext_resource type="Texture2D" uid="uid://1u2qwy53ik2l" path="res://Assets/Book.png" id="1_51cc1"]
+[ext_resource type="Script" uid="uid://b67vyktqabcoi" path="res://Scripts/book_scene.gd" id="1_p78a5"]
+[ext_resource type="PackedScene" uid="uid://b8rlhgdhqmu3u" path="res://Scenes/fade.tscn" id="3_lej1j"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("3_7ksh1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_q4ag0")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 5.0
-}]
+[node name="Node2D" type="Node2D" unique_id=444095358]
+script = ExtResource("1_p78a5")
 
-[node name="Node2D" type="Node2D" unique_id=1743793518]
-script = ExtResource("1_lej1j")
+[node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
+position = Vector2(580.00006, 329)
+scale = Vector2(10, 10)
+texture = ExtResource("1_51cc1")
 
-[node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
-position = Vector2(-203, 287)
-scale = Vector2(0.17956349, 0.9661134)
-sprite_frames = SubResource("SpriteFrames_ilkqt")
+[node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_lej1j")]
+unique_name_in_owner = true
 
-[node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
-position = Vector2(1365, 33)
-scale = Vector2(0.35813493, 0.4571231)
-texture = ExtResource("3_7ksh1")
-
-[node name="Timer" type="Timer" parent="." unique_id=1942069986]
-wait_time = 5.0
+[node name="Timer" type="Timer" parent="." unique_id=428846735]
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
