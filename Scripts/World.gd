@@ -10,6 +10,7 @@ extends Node2D
 @onready var background: Sprite2D = $Background
 @onready var foreground: Sprite2D = $Foreground
 @onready var tree_hitbox: Area2D = $Tree/Hitbox
+@onready var runner: AnimatedSprite2D = $Runner
 
 # speed amd health amd damage 
 @export var tornado_speed: float = 175
@@ -50,7 +51,6 @@ var tornado_hit: bool = false
 var tornado_deflected: bool = false
 var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
 # Burning person: runs in from a side, torches the tree on contact.
-var runner: ColorRect
 var runner_moving: bool = false
 var runner_hit: bool = false
 var runner_dir: float = 1.0
@@ -99,7 +99,6 @@ func _ready() -> void:   # prep var
 	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
-	_create_runner()
 	timer.start()
 	tornado.play()
 
@@ -306,22 +305,17 @@ func _on_timer_timeout() -> void:
 	timer.wait_time = randf_range(1.5, 6.0)
 
 
-# ---- Burning person -------------------------------------------------------
-func _create_runner() -> void:
-	runner = ColorRect.new()
-	runner.size = Vector2(34, 78)
-	runner.color = Color(1.0, 0.45, 0.1)  # burning orange
-	runner.visible = false
-	add_child(runner)
 
 func launch_runner() -> void:
 	var vw := get_viewport_rect().size.x
 	var from_left := randf() < 0.5
 	runner_dir = 1.0 if from_left else -1.0
 	runner.position.x = -60.0 if from_left else vw + 60.0
-	runner.position.y = get_viewport_rect().size.y * bomb_land_ratio - runner.size.y * 0.5
-	runner.color = Color(1.0, 0.45, 0.1)
+	runner.position.y = get_viewport_rect().size.y * bomb_land_ratio
+	runner.modulate = Color.WHITE
 	runner.visible = true
+	# Separate frames per direction: 0-1-2 run right, 4-5-6 run left.
+	runner.play("run_right" if runner_dir > 0.0 else "run_left")
 	runner_moving = true
 	runner_hit = false
 
@@ -330,10 +324,12 @@ func _burn_tree() -> void:
 	runner_hit = true
 	runner_moving = false
 	damage_tree(runner_damage)
+	# Frame 3 = blowing up, held (no loop).
+	runner.play("boom")
 	var tw := create_tween()
-	for n in 3:
-		tw.tween_property(runner, "color", Color.RED, 0.06)
-		tw.tween_property(runner, "color", Color.WHITE, 0.06)
+	for n in 10:
+		tw.tween_property(runner, "modulate", Color.RED, 0.06)
+		tw.tween_property(runner, "modulate", Color.WHITE, 0.06)
 	tw.tween_callback(func(): runner.visible = false)
 
 func launch_plane() -> void:

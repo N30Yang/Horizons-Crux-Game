@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://dr8dstoxxcijp" path="res://Assets/BOMB.png" id="6_0iob3"]
 [ext_resource type="Texture2D" uid="uid://6lrhb2eafj8v" path="res://Assets/Tree-Normal.png" id="7_tree"]
 [ext_resource type="Texture2D" uid="uid://bae6niuyto0c5" path="res://Assets/Foreground.png" id="10_8ju71"]
+[ext_resource type="Texture2D" uid="uid://hnttj5eyycpc" path="res://Assets/Male-Character-Spritesheet_EVIL.png" id="11_evil"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u0f01"]
 radius = 212.39078
@@ -39,6 +40,106 @@ animations = [{
 
 [sub_resource type="RectangleShape2D" id="rect_tornado"]
 size = Vector2(24, 48)
+
+[sub_resource type="AtlasTexture" id="evil_0"]
+atlas = ExtResource("11_evil")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_1"]
+atlas = ExtResource("11_evil")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_2"]
+atlas = ExtResource("11_evil")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_3"]
+atlas = ExtResource("11_evil")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_4"]
+atlas = ExtResource("11_evil")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_5"]
+atlas = ExtResource("11_evil")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_6"]
+atlas = ExtResource("11_evil")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="evil_7"]
+atlas = ExtResource("11_evil")
+region = Rect2(144, 48, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_runner"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("evil_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_7")
+}],
+"loop": 1,
+"name": &"all",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("evil_7")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_0")
+}],
+"loop": 0,
+"name": &"boom",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("evil_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_6")
+}],
+"loop": 1,
+"name": &"run_left",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("evil_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("evil_1")
+}],
+"loop": 1,
+"name": &"run_right",
+"speed": 8.0
+}]
 
 [node name="Node2D2" type="Node2D" unique_id=1743793518]
 script = ExtResource("1_rpqi1")
@@ -115,5 +216,11 @@ shape = SubResource("rect_tornado")
 wait_time = 5.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=104994087]
+
+[node name="Runner" type="AnimatedSprite2D" parent="." unique_id=1339268230]
+visible = false
+scale = Vector2(3.5, 3.5)
+sprite_frames = SubResource("SpriteFrames_runner")
+animation = &"boom"
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
