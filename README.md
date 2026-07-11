@@ -9,7 +9,6 @@ The words are: <br>
 W — Shapeshift: shapeshift, dragon, transform, morph <br>
 E — Flight: flight, fly, ascend, rise, up <br>
 Q — 4th Wall: wall, break, glitch, reality <br>
-R — Consequences: storm, passes, freeze, time, clear, plummet, fall
 
 ## How To Play
 To play the game, go to the link here. The game was made in Godot by three young and incredi, developers.
