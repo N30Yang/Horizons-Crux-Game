@@ -17,7 +17,7 @@ func _process(delta: float) -> void:
 
 func _on_texture_button_pressed() -> void:
 	print("hello")
-	#selected_character_path = "Brownie"
+#	selected_character_path = "Brownie"
 	pass # Replace with function body.
 
 
