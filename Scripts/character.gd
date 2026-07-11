@@ -6,13 +6,13 @@ extends CharacterBody2D
 const SPEED = 300.0
 const JUMP_VELOCITY = -300.0
 const BIRD_VELOCITY = -5000.0
-var direction1:Vector2=Vector2.ZERO
+var direction1: Vector2 = Vector2.ZERO
 
 # --- Voice-driven movement state --------------------------------------------
 # Voice is discrete, movement is continuous. A recognized "left"/"right" drives
 # the character for VOICE_MOVE_DURATION seconds unless "stop" cancels it.
 const VOICE_MOVE_DURATION := 1.2
-var voice_direction: float = 0.0    # -1 left, +1 right, 0 none
+var voice_direction: float = 0.0 # -1 left, +1 right, 0 none
 var voice_move_timer: float = 0.0
 var voice_jump_queued: bool = false
 
@@ -34,14 +34,11 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	
-	
-	
 	if (GameManager.selected_character_path == "Blondie"):
 		sprite = $BlondeCharacter
 		blonde_character.visible = true
 	if (GameManager.selected_character_path == "Brownie"):
-		sprite=$BrownieCharacter
+		sprite = $BrownieCharacter
 		brownie_character.visible = true
 		
 func _on_node_2d_2_shapeshift(animal: Variant) -> void:
@@ -83,8 +80,7 @@ func _on_voice_power(power_key: String) -> void:
 			if ANIMAL_POWERS.has(power_key):
 				set_animal(ANIMAL_POWERS[power_key])
 func _physics_process(delta: float) -> void:
-	
-	if (not is_on_floor() ):
+	if (not is_on_floor()):
 		velocity += get_gravity() * delta
 
 	# Count down the voice-move window.
@@ -96,25 +92,24 @@ func _physics_process(delta: float) -> void:
 	# Jump from keyboard OR a queued voice "jump".
 	var jump_pressed := Input.is_action_just_pressed("jump") or voice_jump_queued
 	voice_jump_queued = false
-
-	# Handle jump.
-	if jump_pressed and is_on_floor() and GameManager.currentanimal == "bird" :
-		velocity.y= BIRD_VELOCITY
-
-
-	if jump_pressed and is_on_floor() :
+	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 
+	# Handle jump.
+	if jump_pressed and is_on_floor() and GameManager.currentanimal == "bird":
+		velocity.y = BIRD_VELOCITY
+	
+		
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	# Keyboard takes priority; fall back to the active voice direction.
 	var direction := Input.get_axis("left", "right")
 	if direction == 0.0 and voice_move_timer > 0.0:
 		direction = voice_direction
-	direction1 = Input.get_vector("left", "right","up","down")
+	direction1 = Input.get_vector("left", "right", "up", "down")
 	if direction1.x == 0.0 and direction != 0.0:
 		direction1.x = direction
-	if direction :
+	if direction:
 		velocity.x = direction * SPEED
 		
 		if (GameManager.currentanimal == "human"):
@@ -127,7 +122,6 @@ func _physics_process(delta: float) -> void:
 			sprite.play("blobfish")
 		if (GameManager.currentanimal == "bird"):
 			sprite.play("bird")
-		
 		
 		
 	else:
@@ -146,18 +140,14 @@ func _physics_process(delta: float) -> void:
 			sprite.play("bird")
 		
 		
-		
-			
-			
-			
 	move_and_slide()
 	update_facing_direction()
 	
-func update_facing_direction()  :
-	if direction1.x > 0 :
-		sprite.flip_h=false
+func update_facing_direction():
+	if direction1.x > 0:
+		sprite.flip_h = false
 		
-	elif direction1.x <0:
-		sprite.flip_h=true
+	elif direction1.x < 0:
+		sprite.flip_h = true
 
 pass # Replace with function body.

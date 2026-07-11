@@ -21,3 +21,5 @@ func _on_timer_timeout() -> void:
 	get_tree().change_scene_to_file("res://Scenes/MainScene.tscn")
 	
 	pass # Replace with function body.
+	
+	# for main scene instantiate fade scene and then add this code into the main
