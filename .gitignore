@@ -18,3 +18,4 @@ New Game Project.audio.position.worklet.js
 # OS junk
 .DS_Store
 Thumbs.db
+.vscode/settings.json
