@@ -594,10 +594,10 @@ script = ExtResource("1_vifax")
 
 [node name="BlondeCharacter" type="AnimatedSprite2D" parent="." unique_id=1051871566]
 visible = false
-position = Vector2(49, 532)
+position = Vector2(49, 500)
 scale = Vector2(2.4, 2.4)
 sprite_frames = SubResource("SpriteFrames_0j3ql")
-animation = &"lionstill"
+animation = &"lion"
 
 [node name="BrownieCharacter" type="AnimatedSprite2D" parent="." unique_id=103477317]
 visible = false

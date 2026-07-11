@@ -366,6 +366,8 @@ func damage_tree(amount: int = 1) -> void:
 	update_tree()
 	hit_stop()
 	if tree_health <= 0:
+		
+		get_tree().change_scene_to_file("res://Scenes/BookEndScene.tscn")
 		print("[GAME] The tree has died.")
 		# END GAME FUNCTION HERE
 
@@ -449,6 +451,8 @@ func _hardest_phase() -> void:
 
 # TODO: WIN FUNFCIOTN HERE
 func _hardest_tick() -> void:
+	
+	get_tree().change_scene_to_file("res://Scenes/BookEndWinScene.tscn")
 	pass 
 
 func _on_timer_timeout() -> void:
