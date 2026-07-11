@@ -1,10 +1,9 @@
 [gd_scene format=3 uid="uid://cjgjsf1mlm21e"]
 
-<<<<<<< Updated upstream
 [ext_resource type="Script" uid="uid://b6avpqngxc0bg" path="res://Scripts/menu.gd" id="1_qxria"]
-[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="2_7rqgy"]
+[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="2_rpqi1"]
 [ext_resource type="Texture2D" uid="uid://ycsp2c0bgwbw" path="res://Branding/logo.png" id="2_y4jh7"]
-[ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="3_qxria"]
+[ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="3_uxrcv"]
 [ext_resource type="Texture2D" uid="uid://ctwuigy0e1lw8" path="res://UI/Asset 8.png" id="5_q68mp"]
 
 [node name="StartMenu" type="Control" unique_id=1125722841]
@@ -45,42 +44,9 @@ offset_top = -530.0
 offset_right = 796.0
 offset_bottom = -261.0
 grow_vertical = 0
-texture_normal = ExtResource("2_7rqgy")
+texture_normal = ExtResource("2_rpqi1")
 ignore_texture_size = true
 stretch_mode = 4
-=======
-[ext_resource type="Script" uid="uid://d0nhl0c06ortq" path="res://Scripts/World.gd" id="1_nhkr4"]
-[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="2_7rqgy"]
-[ext_resource type="Texture2D" uid="uid://cvjqiynlgy71w" path="res://Assets/TORNAD0_FRAME_1.png" id="2_qxria"]
-[ext_resource type="Texture2D" uid="uid://4b8kh5f0lbji" path="res://Assets/TORNAD0_FRAME_2.png" id="3_y4jh7"]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("2_qxria")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_y4jh7")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 5.0
-}]
-
-[node name="Node2D" type="Node2D" unique_id=1743793518]
-script = ExtResource("1_nhkr4")
-
-[node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
-position = Vector2(-174.00002, 475)
-scale = Vector2(10, 10)
-sprite_frames = SubResource("SpriteFrames_ilkqt")
-
-[node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
-position = Vector2(1365, 33)
-scale = Vector2(0.35813493, 0.4571231)
-texture = ExtResource("2_7rqgy")
->>>>>>> Stashed changes
 
 [node name="MenuButton" type="TextureButton" parent="." unique_id=2084182008]
 layout_mode = 0
@@ -88,7 +54,7 @@ offset_left = 163.0
 offset_top = 287.0
 offset_right = 465.0
 offset_bottom = 510.0
-texture_normal = ExtResource("3_qxria")
+texture_normal = ExtResource("3_uxrcv")
 ignore_texture_size = true
 stretch_mode = 4
 
