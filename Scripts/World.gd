@@ -25,6 +25,8 @@ extends Node2D
 
 @export var bomb_damage: int = 2
 @export var tornado_damage: int = 1
+@export var runner_speed: float = 220.0
+@export var runner_damage: int = 2
 @export var bomber_max_health: int = 2
 @export var rocket_damage: float = 1.0
 
@@ -47,6 +49,11 @@ var tornado_moving: bool = false
 var tornado_hit: bool = false
 var tornado_deflected: bool = false
 var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
+# Burning person: runs in from a side, torches the tree on contact.
+var runner: ColorRect
+var runner_moving: bool = false
+var runner_hit: bool = false
+var runner_dir: float = 1.0
 var plane_moving: bool = false
 var plane_dir: float = -1.0   # +1 travels right, -1 travels left
 var bomb_dropped: bool = false
@@ -92,6 +99,7 @@ func _ready() -> void:   # prep var
 	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
+	_create_runner()
 	timer.start()
 	tornado.play()
 
@@ -141,6 +149,13 @@ func _process(delta: float) -> void:
 			bomb.position.y = land_y
 			bomb_dropping = false
 			bomb.visible = false
+
+	if runner_moving:
+		runner.position.x += runner_speed * delta * runner_dir
+		var reached := (runner_dir > 0.0 and runner.position.x >= screen_middle.x) \
+			or (runner_dir < 0.0 and runner.position.x <= screen_middle.x)
+		if reached and not runner_hit:
+			_burn_tree()
 
 func drop_bomb() -> void:
 	bomb_dropped = true
@@ -281,12 +296,45 @@ func _on_timer_timeout() -> void:
 		launch_plane()
 	if not tornado_moving and randf() < 0.7:
 		launch_tornado()
+	if not runner_moving and randf() < 0.5:
+		launch_runner()
 	if not plane_moving and not tornado_moving:
 		if randf() < 0.5:
 			launch_plane()
 		else:
 			launch_tornado()
 	timer.wait_time = randf_range(1.5, 6.0)
+
+
+# ---- Burning person -------------------------------------------------------
+func _create_runner() -> void:
+	runner = ColorRect.new()
+	runner.size = Vector2(34, 78)
+	runner.color = Color(1.0, 0.45, 0.1)  # burning orange
+	runner.visible = false
+	add_child(runner)
+
+func launch_runner() -> void:
+	var vw := get_viewport_rect().size.x
+	var from_left := randf() < 0.5
+	runner_dir = 1.0 if from_left else -1.0
+	runner.position.x = -60.0 if from_left else vw + 60.0
+	runner.position.y = get_viewport_rect().size.y * bomb_land_ratio - runner.size.y * 0.5
+	runner.color = Color(1.0, 0.45, 0.1)
+	runner.visible = true
+	runner_moving = true
+	runner_hit = false
+
+# Reached the tree: flash red/white, torch it, then vanish.
+func _burn_tree() -> void:
+	runner_hit = true
+	runner_moving = false
+	damage_tree(runner_damage)
+	var tw := create_tween()
+	for n in 3:
+		tw.tween_property(runner, "color", Color.RED, 0.06)
+		tw.tween_property(runner, "color", Color.WHITE, 0.06)
+	tw.tween_callback(func(): runner.visible = false)
 
 func launch_plane() -> void:
 	var vw := get_viewport_rect().size.x
