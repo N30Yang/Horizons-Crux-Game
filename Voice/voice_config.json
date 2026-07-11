@@ -15,8 +15,46 @@
 	"Q": {
 	  "name": "Fourth Wall",
 	  "keywords": ["erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove", "murder"]
-	
-	
+	},
+	"MOVE_LEFT": {
+	  "name": "Move Left",
+	  "keywords": ["left", "west"]
+	},
+	"MOVE_RIGHT": {
+	  "name": "Move Right",
+	  "keywords": ["right", "east"]
+	},
+	"JUMP": {
+	  "name": "Jump",
+	  "keywords": ["jump", "hop", "leap"]
+	},
+	"STOP": {
+	  "name": "Stop",
+	  "keywords": ["stop", "halt", "stay"]
+	},
+	"BEAR": {
+	  "name": "Bear",
+	  "keywords": ["bear", "bare"]
+	},
+	"CAPYBARA": {
+	  "name": "Capybara",
+	  "keywords": ["capybara", "capy"]
+	},
+	"BLOBFISH": {
+	  "name": "Blobfish",
+	  "keywords": ["blobfish", "blob"]
+	},
+	"BIRD": {
+	  "name": "Bird",
+	  "keywords": ["bird", "birdie"]
+	},
+	"HUMAN": {
+	  "name": "Human",
+	  "keywords": ["human", "person"]
+	},
+	"SHAPESHIFT": {
+	  "name": "Shapeshift Random",
+	  "keywords": ["shapeshift", "shift", "transform", "morph", "change"]
 	}
   }
 }
