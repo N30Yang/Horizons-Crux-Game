@@ -2,20 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<< Updated upstream
-uid="uid://bhr1i214ahndi"
-=======
-uid="uid://4b8kh5f0lbji"
->>>>>>> Stashed changes
-path="res://.godot/imported/TORNAD0_FRAME_2.png-08943a4e7a0bf674525000faab112b59.ctex"
+uid="uid://bfkpox1rq01h3"
+path="res://.godot/imported/logoNEW.png-93a446085946ce3e93b590a8ab4c72c9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/TORNAD0_FRAME_2.png"
-dest_files=["res://.godot/imported/TORNAD0_FRAME_2.png-08943a4e7a0bf674525000faab112b59.ctex"]
+source_file="res://logoNEW.png"
+dest_files=["res://.godot/imported/logoNEW.png-93a446085946ce3e93b590a8ab4c72c9.ctex"]
 
 [params]
 
