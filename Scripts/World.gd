@@ -37,6 +37,8 @@ extends Node2D
 @export var web_mic_gain: float = 5.0    # scales JS RMS (0..1) to bar/damage
 
 const TREE_STAGES := [
+	preload("res://Assets/NewTreeFInal10.png"),
+	preload("res://Assets/NewTreeFInal9.png"),
 	preload("res://Assets/NewTreeFinal8.png"),
 	preload("res://Assets/NewTreeFinal7.png"),   # diffeent phases of the tree
 	preload("res://Assets/NewTreeFinal6.png"),
@@ -45,10 +47,13 @@ const TREE_STAGES := [
 	preload("res://Assets/NewTreeFinal3.png"),  
 	preload("res://Assets/NewTreeFinal2.png"),
 	preload("res://Assets/NewTreeFinal.png"),
-	preload("res://Assets/NewTreeFinal.png"),
+	preload("res://Assets/NewTreeFinal.png")
+	
 ]
-const MAX_HEALTH := 8   # change for health of tree
+const MAX_HEALTH := 10   # change for health of tree
 var tree_health: int = MAX_HEALTH  
+
+signal shapeshift(animal)
 
 var tornado_moving: bool = false
 var tornado_hit: bool = false
@@ -101,6 +106,12 @@ var plane_hurtbox: Area2D  # bomber's hurtbox; rockets detect it via Area2D over
 var _pencil_tex: Texture2D
 var _eraser_tex: Texture2D
 
+var bombertime:bool = true
+var tornadotime:bool = false
+var firemantime:bool = false
+var win: bool =false
+var loss:bool =false
+
 func _ready() -> void:   # prep var
 	Engine.time_scale = 1.0
 	VoiceInput.power_triggered.connect(_on_voice_power)
@@ -128,8 +139,13 @@ func _ready() -> void:   # prep var
 func _process(delta: float) -> void:
 	_update_volume_meter(delta)
 	_update_bomber_hp_bar()
+	
+	if Input.is_action_just_pressed("shapeshift"):
+		print("yeah")
+		shapeshift.emit("shapeshift")
 
 	if tornado_moving and not tornado_erasing:
+		tornado.position.y = 460
 		tornado.position.x += tornado_speed * delta * tornado_dir
 		if tornado.position.x > get_viewport_rect().size.x + 300 or tornado.position.x < -300:
 			tornado_moving = false
@@ -172,6 +188,7 @@ func _process(delta: float) -> void:
 		runner.position.x += runner_speed * delta * runner_dir
 		# Damage now fires via Runner/Hurtbox overlapping Tree/Hitbox
 		# (_on_tree_hitbox_entered). Just clean up if it somehow runs past.
+		runner.position.y = 500
 		if runner.position.x < -200 or runner.position.x > get_viewport_rect().size.x + 200:
 			runner_moving = false
 			runner.visible = false
@@ -208,7 +225,7 @@ func _on_voice_power(power_key: String) -> void:
 		"W":
 			fire_rocket()
 		"E":
-			deflect_tornado()
+			deflect_tornado()#technically erase but now superceded by shapeshift
 		"Q":
 			erase_power()
 
@@ -337,6 +354,7 @@ func update_health_bar() -> void:
 func _update_bomber_hp_bar() -> void:
 	if bomber_hp_fill == null:
 		return
+	@warning_ignore("shadowed_variable_base_class")
 	var show := plane_moving and plane.visible
 	bomber_hp_bg.visible = show
 	bomber_hp_fill.visible = show

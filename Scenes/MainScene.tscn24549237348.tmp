@@ -12,8 +12,8 @@
 [ext_resource type="Texture2D" uid="uid://bae6niuyto0c5" path="res://Assets/Foreground.png" id="10_8ju71"]
 [ext_resource type="Texture2D" uid="uid://hnttj5eyycpc" path="res://Assets/Male-Character-Spritesheet_EVIL.png" id="11_evil"]
 [ext_resource type="Texture2D" uid="uid://cqn8qvxq88y8c" path="res://Assets/boom/frame_00_delay-0.1s.png" id="12_4sso6"]
+[ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://Scenes/Character.tscn" id="12_xb4mg"]
 [ext_resource type="Texture2D" uid="uid://cd1ac18bldnmh" path="res://Assets/image-removebg-preview(1).png" id="17_hx8n4"]
-[ext_resource type="PackedScene" uid="uid://bce1muf7gtls1" path="res://Scenes/character1.tscn" id="18_hx8n4"]
 [ext_resource type="Texture2D" uid="uid://dwchle8pupp6x" path="res://Assets/image-removebg-preview.png" id="18_i0j58"]
 [ext_resource type="Texture2D" uid="uid://c1bfof5c5kyt" path="res://Assets/boom/frame_12_delay-0.1s.png" id="24_sl126"]
 [ext_resource type="Texture2D" uid="uid://bbhb8hl76f7vx" path="res://Assets/boom/frame_13_delay-0.1s.png" id="25_ergw4"]
@@ -160,16 +160,14 @@ scale = Vector2(4, 4)
 texture = ExtResource("2_4b75m")
 
 [node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
-position = Vector2(1444, 58)
+position = Vector2(1364, 37)
 scale = Vector2(0.35813493, 0.4571231)
 texture = ExtResource("2_rpqi1")
 
-[node name="Area2D" type="Area2D" parent="Plane" unique_id=793615583]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane/Area2D" unique_id=1934043721]
-position = Vector2(-55.844727, 164.06961)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane" unique_id=1934043721]
+position = Vector2(-55.84487, 164.0696)
 rotation = 1.5422868
-scale = Vector2(1, 1.9999999)
+scale = Vector2(1, 2)
 shape = SubResource("CircleShape2D_u0f01")
 
 [node name="Bomb" type="Sprite2D" parent="." unique_id=1451402138]
@@ -183,7 +181,7 @@ texture = ExtResource("6_0iob3")
 polygon = PackedVector2Array(6.6666565, -2, 6.6666565, 7.666666, 1.6666565, 11.333334, -2.666687, 8.333334, -2, -1.666666, -0.666687, -5.666666, -4, -8.333334, -4, -15.333334, 7.6666565, -15.666666, 8.333313, -8.000002, 5.6666565, -5.666666)
 
 [node name="Jet" type="Sprite2D" parent="." unique_id=1451402140]
-position = Vector2(1839, 111)
+position = Vector2(1764, 106)
 scale = Vector2(4, 4)
 texture = ExtResource("5_4b75m")
 
@@ -250,16 +248,13 @@ wait_time = 5.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=104994087]
 
+[node name="Character" parent="." unique_id=1738440849 instance=ExtResource("12_xb4mg")]
+position = Vector2(147, -35)
+
 [node name="Eraser" type="Sprite2D" parent="." unique_id=273702095]
 texture = ExtResource("17_hx8n4")
 
 [node name="Pencil" type="Sprite2D" parent="." unique_id=418570532]
 texture = ExtResource("18_i0j58")
 
-[node name="CharacterBody2D" parent="." unique_id=962582943 instance=ExtResource("18_hx8n4")]
-position = Vector2(2, -25)
-collision_layer = 1
-collision_mask = 3
-
-[connection signal="shapeshift" from="." to="CharacterBody2D" method="_on_node_2d_2_shapeshift"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
