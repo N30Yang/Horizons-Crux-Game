@@ -367,6 +367,7 @@ func damage_tree(amount: int = 1) -> void:
 	hit_stop()
 	if tree_health <= 0:
 		print("[GAME] The tree has died.")
+		# END GAME FUNCTION HERE
 
 # swap tree pic to match how beat up it is + refresh the bar
 func update_tree() -> void:
@@ -446,9 +447,9 @@ func _hardest_phase() -> void:
 		await get_tree().create_timer(1.0).timeout
 		t += 1.0
 
-# TODO: hardest-phase event. Fill in later.
+# TODO: WIN FUNFCIOTN HERE
 func _hardest_tick() -> void:
-	pass
+	pass 
 
 func _on_timer_timeout() -> void:
 	if phase != Phase.DIRECTOR:
