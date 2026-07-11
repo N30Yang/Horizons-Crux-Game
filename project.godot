@@ -15,6 +15,10 @@ run/main_scene="uid://cjgjsf1mlm21e"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://New Game Project.icon.png"
 
+[audio]
+
+driver/enable_input=true
+
 [autoload]
 
 GameManager="*uid://bk0fqw3wjxtcf"
