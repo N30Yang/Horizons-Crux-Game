@@ -66,4 +66,5 @@ consequence={
 
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
-environment/defaults/default_clear_color=Color(0.05119451, 0.02405627, 0.0062726354, 1)
+renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.62385786, 0.44480065, 0.24461392, 1)

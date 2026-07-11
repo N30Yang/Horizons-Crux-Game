@@ -1,5 +1,5 @@
 extends Node2D
-
+# == sprites and shi
 @onready var timer: Timer = $Timer
 @onready var tornado: AnimatedSprite2D = $Tornado
 @onready var plane: Sprite2D = $Plane
@@ -11,6 +11,7 @@ extends Node2D
 @onready var foreground: Sprite2D = $Foreground
 @onready var tree_hitbox: Area2D = $Tree/Hitbox
 
+# speed amd health amd damage 
 @export var tornado_speed: float = 175
 @export var plane_speed: float = 150
 @export var bomb_speed: float = 175
@@ -22,66 +23,71 @@ extends Node2D
 
 @export var tornado_base_ratio: float = 0.9
 
-@export var hit_range: float = 120.0
-
 @export var bomb_damage: int = 2
 @export var tornado_damage: int = 1
-@export var bomber_max_health: int = 3
+@export var runner_speed: float = 220.0
+@export var runner_damage: int = 2
+@export var bomber_max_health: int = 2
 @export var rocket_damage: float = 1.0
 
 # Volume -> damage multiplier. Louder = more damage.
-@export var vol_damage_min: float = 0.4  # quiet / silence
-@export var vol_damage_max: float = 1.2  # max volume
+@export var vol_damage_min: float = 0.75  # quiet / silence
+@export var vol_damage_max: float = 3.0 # max volume
+@export var web_mic_gain: float = 5.0    # scales JS RMS (0..1) to bar/damage
 
 const TREE_STAGES := [
 	preload("res://Assets/Tree_DEAD.png"),
 	preload("res://Assets/Tree-Breaking_4.png"),
-	preload("res://Assets/Tree-Breaking_3.png"),
+	preload("res://Assets/Tree-Breaking_3.png"),   # diffeent phases of the tree
 	preload("res://Assets/Tree-Breaking_2.png"),
 	preload("res://Assets/Tree-Normal.png"),
 ]
-const MAX_HEALTH := 8
-var tree_health: int = MAX_HEALTH
+const MAX_HEALTH := 8   # change for health of tree
+var tree_health: int = MAX_HEALTH  
 
 var tornado_moving: bool = false
 var tornado_hit: bool = false
+var tornado_deflected: bool = false
+var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
+# Burning person: runs in from a side, torches the tree on contact.
+var runner: ColorRect
+var runner_moving: bool = false
+var runner_hit: bool = false
+var runner_dir: float = 1.0
 var plane_moving: bool = false
+var plane_dir: float = -1.0   # +1 travels right, -1 travels left
 var bomb_dropped: bool = false
 var bomb_dropping: bool = false
 var rockets: Array = []  # each: { "node": Sprite2D, "dmg": float }
 var bomber_health: float = 0.0
 var screen_middle: Vector2
-var plane_start_x: float
-var tornado_start_x: float
 
 @export var hitstop_time: float = 0.09
 var in_hitstop: bool = false
-var sil_bg: ColorRect
+var sil_bg: ColorRect                        # impact frames
 var sil_sprites: Array[CanvasItem] = []
 var sil_hide: Array[CanvasItem] = []
 
 var mic_player: AudioStreamPlayer
 var mic_bus_idx: int = -1
-var voice_unlocked: bool = false
+var voice_unlocked: bool = false    # vars for mic
 var vol_fill: ColorRect
 var vol_peak: float = 0.0
 
 const HP_BAR_WIDTH := 360.0
-var hp_fill: ColorRect
+var hp_fill: ColorRect         # hp bar vars 
 
 const BOMBER_BAR_WIDTH := 90.0
-var bomber_hp_bg: ColorRect
+var bomber_hp_bg: ColorRect   # hp bar vars 
 var bomber_hp_fill: ColorRect
 
-func _ready() -> void:
+func _ready() -> void:   # prep var
 	Engine.time_scale = 1.0
 	VoiceInput.power_triggered.connect(_on_voice_power)
 	VoiceInput.recognition_failed.connect(_on_voice_mishap)
 	VoiceInput.listening_stopped.connect(_restart_listen)
 	tree_hitbox.area_entered.connect(_on_tree_hitbox_entered)
 	screen_middle = get_viewport_rect().size / 2
-	plane_start_x = plane.position.x
-	tornado_start_x = tornado.position.x
 
 	tree.position = Vector2(screen_middle.x, get_viewport_rect().size.y * bomb_land_ratio)
 	update_tree()
@@ -93,6 +99,7 @@ func _ready() -> void:
 	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
+	_create_runner()
 	timer.start()
 	tornado.play()
 
@@ -101,30 +108,37 @@ func _process(delta: float) -> void:
 	_update_bomber_hp_bar()
 
 	if tornado_moving:
-		tornado.position.x += tornado_speed * delta
-		if tornado.position.x > get_viewport_rect().size.x + 100:
+		tornado.position.x += tornado_speed * delta * tornado_dir
+		if tornado.position.x > get_viewport_rect().size.x + 300 or tornado.position.x < -300:
 			tornado_moving = false
 			tornado.visible = false
 
 	if plane_moving:
-		plane.position.x -= plane_speed * delta
+		plane.position.x += plane_speed * delta * plane_dir
 		jet.visible = true
-		jet.position = plane.position + Vector2(jet_trail_offset, jet_y_offset)
-		if not bomb_dropped and plane.position.x <= screen_middle.x:
+		# Jet trails BEHIND the plane (opposite travel dir).
+		jet.position = plane.position + Vector2(-plane_dir * jet_trail_offset, jet_y_offset)
+		var past_middle := (plane_dir < 0.0 and plane.position.x <= screen_middle.x) \
+			or (plane_dir > 0.0 and plane.position.x >= screen_middle.x)
+		if not bomb_dropped and past_middle:
 			drop_bomb()
-		if plane.position.x < -100:
+		if plane.position.x < -150 or plane.position.x > get_viewport_rect().size.x + 150:
 			plane_moving = false
 			plane.visible = false
 			jet.visible = false
 
+	var vw := get_viewport_rect().size.x
 	for i in range(rockets.size() - 1, -1, -1):
 		var r: Sprite2D = rockets[i]["node"]
-		r.position.x -= rocket_speed * delta
-		if plane_moving and plane.visible and r.position.x <= plane.position.x:
+		var rdir: float = rockets[i]["dir"]
+		r.position.x += rocket_speed * delta * rdir
+		var reached := (rdir < 0.0 and r.position.x <= plane.position.x) \
+			or (rdir > 0.0 and r.position.x >= plane.position.x)
+		if plane_moving and plane.visible and reached:
 			hit_bomber(rockets[i]["dmg"])
 			r.queue_free()
 			rockets.remove_at(i)
-		elif r.position.x < -100:
+		elif r.position.x < -150 or r.position.x > vw + 150:
 			r.queue_free()
 			rockets.remove_at(i)
 
@@ -135,6 +149,13 @@ func _process(delta: float) -> void:
 			bomb.position.y = land_y
 			bomb_dropping = false
 			bomb.visible = false
+
+	if runner_moving:
+		runner.position.x += runner_speed * delta * runner_dir
+		var reached := (runner_dir > 0.0 and runner.position.x >= screen_middle.x) \
+			or (runner_dir < 0.0 and runner.position.x <= screen_middle.x)
+		if reached and not runner_hit:
+			_burn_tree()
 
 func drop_bomb() -> void:
 	bomb_dropped = true
@@ -156,13 +177,15 @@ func _input(event: InputEvent) -> void:
 func _restart_listen() -> void:
 	if not voice_unlocked:
 		return
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.05).timeout
 	VoiceInput.start_listening()
 
 func _on_voice_power(power_key: String) -> void:
 	match power_key:
 		"W":
 			fire_rocket()
+		"E":
+			deflect_tornado()
 
 
 # No cooldown: every call spawns a new rocket. Rapid, clear speech = rapid fire.
@@ -175,8 +198,30 @@ func fire_rocket() -> void:
 	r.visible = true
 	r.position = jet.position
 	add_child(r)
-	rockets.append({ "node": r, "dmg": dmg })
+	rockets.append({ "node": r, "dmg": dmg, "dir": plane_dir })
 	print("[GAME] Rocket fired. vol %d%% -> dmg x%.2f = %.2f" % [int(vol_peak * 100.0), mult, dmg])
+
+
+# Reverse an active tornado so it blows back off-screen without hitting the tree.
+func deflect_tornado() -> void:
+	if not tornado_moving or tornado_hit or tornado_deflected:
+		return
+	tornado_deflected = true
+	tornado_dir = -tornado_dir  # reverse: send it back the way it came
+	tornado.scale.x = absf(tornado.scale.x) * tornado_dir  # flip facing
+	_shine_tornado()
+	print("[GAME] Tornado deflected!")
+
+
+# Bright flash + scale pop on the tornado when deflected.
+func _shine_tornado() -> void:
+	var base_scale := tornado.scale
+	tornado.modulate = Color(6.0, 6.0, 6.0, 1.0)  # over-bright -> clamps white
+	var tw := create_tween()
+	tw.tween_property(tornado, "modulate", Color.WHITE, 0.45)
+	var tw2 := create_tween()
+	tw2.tween_property(tornado, "scale", base_scale * 1.18, 0.08)
+	tw2.tween_property(tornado, "scale", base_scale, 0.22)
 
 func hit_bomber(dmg: float) -> void:
 	bomber_health -= dmg
@@ -251,6 +296,8 @@ func _on_timer_timeout() -> void:
 		launch_plane()
 	if not tornado_moving and randf() < 0.7:
 		launch_tornado()
+	if not runner_moving and randf() < 0.5:
+		launch_runner()
 	if not plane_moving and not tornado_moving:
 		if randf() < 0.5:
 			launch_plane()
@@ -258,8 +305,45 @@ func _on_timer_timeout() -> void:
 			launch_tornado()
 	timer.wait_time = randf_range(1.5, 6.0)
 
+
+# ---- Burning person -------------------------------------------------------
+func _create_runner() -> void:
+	runner = ColorRect.new()
+	runner.size = Vector2(34, 78)
+	runner.color = Color(1.0, 0.45, 0.1)  # burning orange
+	runner.visible = false
+	add_child(runner)
+
+func launch_runner() -> void:
+	var vw := get_viewport_rect().size.x
+	var from_left := randf() < 0.5
+	runner_dir = 1.0 if from_left else -1.0
+	runner.position.x = -60.0 if from_left else vw + 60.0
+	runner.position.y = get_viewport_rect().size.y * bomb_land_ratio - runner.size.y * 0.5
+	runner.color = Color(1.0, 0.45, 0.1)
+	runner.visible = true
+	runner_moving = true
+	runner_hit = false
+
+# Reached the tree: flash red/white, torch it, then vanish.
+func _burn_tree() -> void:
+	runner_hit = true
+	runner_moving = false
+	damage_tree(runner_damage)
+	var tw := create_tween()
+	for n in 3:
+		tw.tween_property(runner, "color", Color.RED, 0.06)
+		tw.tween_property(runner, "color", Color.WHITE, 0.06)
+	tw.tween_callback(func(): runner.visible = false)
+
 func launch_plane() -> void:
-	plane.position.x = plane_start_x
+	var vw := get_viewport_rect().size.x
+	var from_left := randf() < 0.5
+	plane_dir = 1.0 if from_left else -1.0
+	plane.position.x = -100.0 if from_left else vw + 100.0
+	# Face travel direction (sprite art faces left at +scale.x).
+	plane.scale.x = absf(plane.scale.x) * -plane_dir
+	jet.scale.x = absf(jet.scale.x) * -plane_dir
 	plane.visible = true
 	bomb.visible = false
 	bomb_dropped = false
@@ -268,15 +352,20 @@ func launch_plane() -> void:
 	bomber_health = bomber_max_health
 
 func launch_tornado() -> void:
-	tornado.position.x = tornado_start_x
+	var vw := get_viewport_rect().size.x
+	var from_left := randf() < 0.5
+	tornado_dir = 1.0 if from_left else -1.0
+	tornado.position.x = -200.0 if from_left else vw + 200.0
 	var base_y := get_viewport_rect().size.y * tornado_base_ratio
 	var tex := tornado.sprite_frames.get_frame_texture(tornado.animation, tornado.frame)
 	var half_h := tex.get_height() * tornado.scale.y * 0.5
 	tornado.position.y = base_y - half_h
+	tornado.scale.x = absf(tornado.scale.x) * tornado_dir
 	tornado.visible = true
 	tornado.play()
 	tornado_moving = true
 	tornado_hit = false
+	tornado_deflected = false
 
 
 func hit_stop(duration: float = -1.0) -> void:
@@ -372,6 +461,10 @@ func _setup_juice_ui() -> void:
 
 
 func _setup_mic() -> void:
+	# On web the JS bridge (Vosk / analyser) provides the mic level, and Godot's
+	# AudioStreamMicrophone can't play in the single-threaded web build. Skip it.
+	if OS.has_feature("web"):
+		return
 	AudioServer.add_bus()
 	mic_bus_idx = AudioServer.bus_count - 1
 	AudioServer.set_bus_name(mic_bus_idx, "MicMeter")
@@ -388,7 +481,10 @@ func _update_volume_meter(delta: float) -> void:
 	if vol_fill == null:
 		return
 	var level := 0.0
-	if mic_bus_idx >= 0:
+	var web_level := VoiceInput.get_mic_level()  # -1 if not on web
+	if web_level >= 0.0:
+		level = clampf(web_level * web_mic_gain, 0.0, 1.0)
+	elif mic_bus_idx >= 0:
 		var db := AudioServer.get_bus_peak_volume_left_db(mic_bus_idx, 0)
 		level = clampf(inverse_lerp(-60.0, 0.0, db), 0.0, 1.0)
 	vol_peak = lerpf(vol_peak, level, clampf(delta * 15.0, 0.0, 1.0))

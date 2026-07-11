@@ -1,12 +1,16 @@
 {
   "_comment": "Keyword -> power mappings for The Last One voice system. Powers map to Q/W/E/R keys. Keywords are lowercase; fuzzy matcher tolerates up to 2 edits (Levenshtein).",
-  "confidence_threshold": 0.70,
-  "fuzzy_max_distance": 2,
+  "confidence_threshold": 0.55,
+  "fuzzy_max_distance": 3,
   "speech_timeout_ms": 10000,
   "powers": {
 	"W": {
 	  "name": "Shoot",
-	  "keywords": ["shoot", "fire", "rocket", "shot"]
+	  "keywords": ["shoot", "shoots", "shot", "shots", "fire", "fired", "blast", "attack", "strike", "launch", "bang", "boom", "gun", "hit", "boot", "chute"]
+	},
+	"E": {
+	  "name": "Deflect",
+	  "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce"]
 	}
   }
 }
