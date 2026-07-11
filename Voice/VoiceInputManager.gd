@@ -130,7 +130,8 @@ func _setup_js_bridge() -> void:
 		JavaScriptBridge.eval("if (window.godotVoiceReady) window.godotVoiceReady();", true)
 
 
-	const _BRIDGE_JS := """
+# Full Web Speech API bridge, injected at runtime so it survives re-exports.
+const _BRIDGE_JS := """
 (function () {
 	if (window.__voiceBridgeInstalled) return;
 	window.__voiceBridgeInstalled = true;
