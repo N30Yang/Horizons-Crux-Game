@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dweefs748v03k"]
+
+[ext_resource type="Script" uid="uid://b67vyktqabcoi" path="res://Scripts/book_scene.gd" id="1_bilmp"]
+[ext_resource type="Texture2D" uid="uid://1u2qwy53ik2l" path="res://Assets/Book.png" id="2_7xbt5"]
+[ext_resource type="PackedScene" uid="uid://b8rlhgdhqmu3u" path="res://Scenes/fade.tscn" id="3_7cs3i"]
+
+[node name="Node2D" type="Node2D" unique_id=444095358]
+script = ExtResource("1_bilmp")
+
+[node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
+position = Vector2(580.00006, 329)
+scale = Vector2(10, 10)
+texture = ExtResource("2_7xbt5")
+
+[node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_7cs3i")]
+unique_name_in_owner = true
+
+[node name="Timer" type="Timer" parent="." unique_id=428846735]
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
