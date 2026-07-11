@@ -59,6 +59,7 @@ var runner_moving: bool = false
 var runner_hit: bool = false
 var runner_dir: float = 1.0
 var plane_moving: bool = false
+var plane_frozen: bool = false  # held still during the fourth-wall attack
 var plane_dir: float = -1.0   # +1 travels right, -1 travels left
 var bomb_dropped: bool = false
 var bomb_dropping: bool = false
@@ -87,6 +88,15 @@ var bomber_hp_fill: ColorRect
 
 var plane_hurtbox: Area2D  # bomber's hurtbox; rockets detect it via Area2D overlap
 
+# fourth-wall power art (pencil + eraser). scale/offset are tweakable since the
+# source pngs have big transparent margins n weird pivots.
+@export var fx_pencil_scale: float = 0.5
+@export var fx_eraser_scale: float = 0.5
+@export var fx_pencil_offset: Vector2 = Vector2.ZERO
+@export var fx_eraser_offset: Vector2 = Vector2.ZERO
+var _pencil_tex: Texture2D
+var _eraser_tex: Texture2D
+
 func _ready() -> void:   # prep var
 	Engine.time_scale = 1.0
 	VoiceInput.power_triggered.connect(_on_voice_power)
@@ -94,6 +104,8 @@ func _ready() -> void:   # prep var
 	VoiceInput.listening_stopped.connect(_restart_listen)
 	tree_hitbox.area_entered.connect(_on_tree_hitbox_entered)
 	_setup_plane_hurtbox()
+	_pencil_tex = load("res://Assets/image-removebg-preview.png")
+	_eraser_tex = load("res://Assets/image-removebg-preview(1).png")
 	screen_middle = get_viewport_rect().size / 2
 
 	update_tree()
@@ -108,6 +120,7 @@ func _ready() -> void:   # prep var
 	timer.start()
 	tornado.play()
 
+# the big loop, runs every frame. moves everything around n checks stuff
 func _process(delta: float) -> void:
 	_update_volume_meter(delta)
 	_update_bomber_hp_bar()
@@ -118,7 +131,7 @@ func _process(delta: float) -> void:
 			tornado_moving = false
 			tornado.visible = false
 
-	if plane_moving:
+	if plane_moving and not plane_frozen:
 		plane.position.x += plane_speed * delta * plane_dir
 		jet.visible = true
 		# Jet trails BEHIND the plane (opposite travel dir).
@@ -159,6 +172,7 @@ func _process(delta: float) -> void:
 			runner_moving = false
 			runner.visible = false
 
+# plane yeets the bomb straight down
 func drop_bomb() -> void:
 	bomb_dropped = true
 
@@ -166,6 +180,7 @@ func drop_bomb() -> void:
 	bomb.visible = true
 	bomb_dropping = true
 
+# first tap/click wakes up the mic. W key shoots too (backup for no mic)
 func _input(event: InputEvent) -> void:
 	var key_press: bool = event is InputEventKey and event.pressed
 	var mouse_press: bool = event is InputEventMouseButton and event.pressed
@@ -176,18 +191,22 @@ func _input(event: InputEvent) -> void:
 	if key_press and event.keycode == KEY_W:
 		fire_rocket()
 
+# mic kicks itself back on so its basically always listening
 func _restart_listen() -> void:
 	if not voice_unlocked:
 		return
 	await get_tree().create_timer(0.05).timeout
 	VoiceInput.start_listening()
 
+# voice heard a word -> do the matching power
 func _on_voice_power(power_key: String) -> void:
 	match power_key:
 		"W":
 			fire_rocket()
 		"E":
 			deflect_tornado()
+		"Q":
+			erase_power()
 
 
 # No cooldown: every call spawns a new rocket. Rapid, clear speech = rapid fire.
@@ -261,6 +280,7 @@ func _shine_tornado() -> void:
 	tw2.tween_property(tornado, "scale", base_scale * 1.18, 0.08)
 	tw2.tween_property(tornado, "scale", base_scale, 0.22)
 
+# rocket smacked the plane, chip its hp
 func hit_bomber(dmg: float) -> void:
 	bomber_health -= dmg
 	hit_stop()
@@ -269,11 +289,13 @@ func hit_bomber(dmg: float) -> void:
 	else:
 		print("[GAME] Bomber hit! health: %.1f" % bomber_health)
 
+# wipe every rocket currently flying
 func _clear_rockets() -> void:
 	for entry in rockets:
 		entry["node"].queue_free()
 	rockets.clear()
 
+# plane's ded, hide it n clean up
 func shoot_down_bomber() -> void:
 	plane_moving = false
 	plane.visible = false
@@ -283,6 +305,7 @@ func shoot_down_bomber() -> void:
 	_clear_rockets()
 	print("[GAME] Bomber shot down!")
 
+# ow, tree takes a hit. dies at 0
 func damage_tree(amount: int = 1) -> void:
 	if tree_health <= 0:
 		return
@@ -293,10 +316,12 @@ func damage_tree(amount: int = 1) -> void:
 	if tree_health <= 0:
 		print("[GAME] The tree has died.")
 
+# swap tree pic to match how beat up it is + refresh the bar
 func update_tree() -> void:
 	tree.texture = TREE_STAGES[ceili(tree_health)]
 	update_health_bar()
 
+# resize + recolor the tree hp bar (green = healthy, red = dying)
 func update_health_bar() -> void:
 	if hp_fill == null:
 		return
@@ -304,6 +329,7 @@ func update_health_bar() -> void:
 	hp_fill.size.x = HP_BAR_WIDTH * frac
 	hp_fill.color = Color(1.0, 0.3, 0.3).lerp(Color(0.3, 1.0, 0.4), frac)
 
+# lil hp bar that floats over the plane while its alive
 func _update_bomber_hp_bar() -> void:
 	if bomber_hp_fill == null:
 		return
@@ -318,6 +344,7 @@ func _update_bomber_hp_bar() -> void:
 	var frac := clampf(float(bomber_health) / float(bomber_max_health), 0.0, 1.0)
 	bomber_hp_fill.size.x = BOMBER_BAR_WIDTH * frac
 
+# somethin touched the tree -> figure out what it was n deal dmg
 func _on_tree_hitbox_entered(area: Area2D) -> void:
 	var src := area.get_parent()
 	if src == bomb and bomb_dropping:
@@ -330,6 +357,7 @@ func _on_tree_hitbox_entered(area: Area2D) -> void:
 	elif src == runner and runner_moving and not runner_hit:
 		_burn_tree()
 
+# every tick roll the dice n maybe throw some enemies at the tree
 func _on_timer_timeout() -> void:
 	var roll := randf()
 	if not plane_moving and roll < 0.7:
@@ -360,6 +388,99 @@ func launch_runner() -> void:
 	runner_moving = true
 	runner_hit = false
 
+# FOURTH WALL power ("erase"/"destroy"/"obliterate"). erase the runner if hes
+# around, otherwise scribble the bomber n take half its hp.
+func erase_power() -> void:
+	if runner_moving and not runner_hit:
+		runner_hit = true
+		runner_moving = false
+		_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
+		print("[GAME] Fourth wall: runner erased!")
+	elif plane_moving:
+		# freeze the bomber for the whole ~5s attack; dmg lands at the end.
+		plane_frozen = true
+		_fourth_wall_fx(plane, false, 75, 3.4, 1.6)
+		print("[GAME] Fourth wall: bomber scribbled for half hp!")
+	else:
+		print("[GAME] Fourth wall: nothin to erase.")
+
+# pencil scribbles over the target drawing the line as it goes, then an eraser
+# spirals in n everything (mark + target) fades out. no white square.
+# erase_target = true fully rubs the thing out (runner); false = just fx (plane).
+func _fourth_wall_fx(target: Node2D, erase_target: bool, steps: int, draw_time: float, erase_time: float) -> void:
+	var pos: Vector2 = target.global_position
+	var box := Vector2(150.0, 190.0)  # rough cover area, tweak to taste
+
+	# random segments splattered all over the target = messy scribble
+	var pts: Array[Vector2] = []
+	for i in steps:
+		var x := pos.x + randf_range(-box.x * 0.5, box.x * 0.5)
+		var y := pos.y + randf_range(-box.y * 0.5, box.y * 0.5)
+		pts.append(Vector2(x, y))
+
+	# the pencil line, drawn on progressively
+	var scrib := Line2D.new()
+	scrib.width = 10.0
+	scrib.default_color = Color(0.08, 0.08, 0.1)
+	scrib.z_index = 60
+	add_child(scrib)
+
+	var pencil := Sprite2D.new()
+	pencil.texture = _pencil_tex
+	pencil.scale = Vector2(fx_pencil_scale, fx_pencil_scale)
+	# put the pencil TIP (bottom-left of the art) at the node origin so it sits
+	# on the point being drawn. bbox tip ~ (65,363), img center (250,250).
+	pencil.offset = Vector2(185, -113)
+	pencil.z_index = 62
+	add_child(pencil)
+	pencil.global_position = pts[0] + fx_pencil_offset
+
+	var eraser := Sprite2D.new()
+	eraser.texture = _eraser_tex
+	eraser.scale = Vector2(fx_eraser_scale, fx_eraser_scale)
+	# center the eraser art on its origin (art bbox center ~ (114,296))
+	eraser.offset = Vector2(136, -46)
+	eraser.z_index = 63
+	eraser.visible = false
+	add_child(eraser)
+
+	var tw := create_tween()
+	# 1) pencil follows the squiggle, line grows to match its tip
+	tw.tween_method(_pencil_draw.bind(scrib, pencil, pts), 0.0, 1.0, draw_time)
+	# 2) hand off to the eraser
+	tw.tween_callback(func() -> void:
+		pencil.queue_free()
+		eraser.visible = true
+		eraser.global_position = pos + fx_eraser_offset)
+	# 3) eraser spirals inward while the mark (+ target) fade to nothing
+	tw.tween_method(_eraser_spiral.bind(eraser, pos, box), 0.0, 1.0, erase_time)
+	tw.parallel().tween_property(scrib, "modulate:a", 0.0, erase_time)
+	if erase_target:
+		tw.parallel().tween_property(target, "modulate:a", 0.0, erase_time)
+	tw.tween_callback(func() -> void:
+		scrib.queue_free()
+		eraser.queue_free()
+		if erase_target:
+			target.visible = false
+			target.modulate = Color.WHITE
+		elif target == plane:
+			# bomber attack over: unfreeze n land the half-hp hit
+			plane_frozen = false
+			hit_bomber(bomber_max_health * 0.5))
+
+# reveal the squiggle up to the pencil's current spot
+func _pencil_draw(t: float, scrib: Line2D, pencil: Sprite2D, pts: Array) -> void:
+	var n := pts.size()
+	var k := clampi(int(ceil(t * n)), 1, n)
+	scrib.points = PackedVector2Array(pts.slice(0, k))
+	pencil.global_position = pts[k - 1] + fx_pencil_offset
+
+# eraser loops inward toward the center as it rubs
+func _eraser_spiral(t: float, eraser: Sprite2D, center: Vector2, box: Vector2) -> void:
+	var angle := t * TAU * 3.0
+	var radius := lerpf(box.x * 0.55, 0.0, t)
+	eraser.global_position = center + Vector2(cos(angle), sin(angle)) * radius + fx_eraser_offset
+
 # Reached the tree: flash red/white, torch it, then vanish.
 func _burn_tree() -> void:
 	runner_hit = true
@@ -374,6 +495,7 @@ func _burn_tree() -> void:
 		tw.tween_property(runner, "modulate", Color.WHITE, 0.06)
 	tw.tween_callback(func(): runner.visible = false)
 
+# send a bomber in from a random side
 func launch_plane() -> void:
 	var vw := get_viewport_rect().size.x
 	var from_left := randf() < 0.5
@@ -389,6 +511,7 @@ func launch_plane() -> void:
 	plane_moving = true
 	bomber_health = bomber_max_health
 
+# spin a tornado in from a random side, sit it on the ground
 func launch_tornado() -> void:
 	var vw := get_viewport_rect().size.x
 	var from_left := randf() < 0.5
@@ -406,6 +529,7 @@ func launch_tornado() -> void:
 	tornado_deflected = false
 
 
+# freeze time for a split sec on impact, makes hits feel chunky
 func hit_stop(duration: float = -1.0) -> void:
 	if in_hitstop:
 		return
@@ -420,6 +544,7 @@ func hit_stop(duration: float = -1.0) -> void:
 	_set_silhouette(false)
 
 
+# black-out all the sprites for that impact-frame look
 func _set_silhouette(on: bool) -> void:
 	if sil_bg:
 		sil_bg.visible = on
@@ -431,6 +556,7 @@ func _set_silhouette(on: bool) -> void:
 			h.visible = not on
 
 
+# builds all the UI (mic meter, tree hp, bomber hp) in code
 func _setup_juice_ui() -> void:
 	var bg_layer := CanvasLayer.new()
 	bg_layer.layer = -1
@@ -515,6 +641,7 @@ func _setup_mic() -> void:
 	mic_player.play()
 
 
+# reads how loud u are n animates the mic bar (also feeds rocket dmg)
 func _update_volume_meter(delta: float) -> void:
 	if vol_fill == null:
 		return
@@ -530,6 +657,7 @@ func _update_volume_meter(delta: float) -> void:
 	vol_fill.color = Color(0.3, 1.0, 0.4).lerp(Color(1.0, 0.3, 0.3), vol_peak)
 
 
+# voice heard somethin but no power matched, just log it
 func _on_voice_mishap(reason: String) -> void:
 	if reason == "no_match":
 		print("[GAME] voice mishap detected: %s" % reason)

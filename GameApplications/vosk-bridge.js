@@ -35,6 +35,8 @@
 		// --- deflect / defend (-> E) ---
 		"deflect", "block", "shield", "guard", "defend", "protect", "parry",
 		"repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce",
+		// --- fourth wall / erase (-> Q) ---
+		"erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove",
 		"[unk]"
 	];
 	var MODEL_URL = "vosk-model-small-en-us-0.15.tar.gz";

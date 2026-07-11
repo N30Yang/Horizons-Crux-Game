@@ -11,6 +11,10 @@
 	"E": {
 	  "name": "Deflect",
 	  "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce"]
+	},
+	"Q": {
+	  "name": "Fourth Wall",
+	  "keywords": ["erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove"]
 	}
   }
 }

@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://hnttj5eyycpc" path="res://Assets/Male-Character-Spritesheet_EVIL.png" id="11_evil"]
 [ext_resource type="Texture2D" uid="uid://cqn8qvxq88y8c" path="res://Assets/boom/frame_00_delay-0.1s.png" id="12_4sso6"]
 [ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://Scenes/Character.tscn" id="12_xb4mg"]
+[ext_resource type="Texture2D" uid="uid://cd1ac18bldnmh" path="res://Assets/image-removebg-preview(1).png" id="17_hx8n4"]
+[ext_resource type="Texture2D" uid="uid://dwchle8pupp6x" path="res://Assets/image-removebg-preview.png" id="18_i0j58"]
 [ext_resource type="Texture2D" uid="uid://c1bfof5c5kyt" path="res://Assets/boom/frame_12_delay-0.1s.png" id="24_sl126"]
 [ext_resource type="Texture2D" uid="uid://bbhb8hl76f7vx" path="res://Assets/boom/frame_13_delay-0.1s.png" id="25_ergw4"]
 [ext_resource type="Texture2D" uid="uid://dswii0nva3y2o" path="res://Assets/boom/frame_14_delay-0.1s.png" id="26_75tun"]
@@ -236,5 +238,11 @@ wait_time = 5.0
 
 [node name="Character" parent="." unique_id=1738440849 instance=ExtResource("12_xb4mg")]
 position = Vector2(-97, -101)
+
+[node name="Eraser" type="Sprite2D" parent="." unique_id=273702095]
+texture = ExtResource("17_hx8n4")
+
+[node name="Pencil" type="Sprite2D" parent="." unique_id=418570532]
+texture = ExtResource("18_i0j58")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

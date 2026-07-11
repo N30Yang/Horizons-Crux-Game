@@ -97,6 +97,7 @@ func _load_default_powers() -> void:
 	_powers = {
 		"W": {"name": "Shoot", "keywords": ["shoot", "shoots", "shot", "shots", "fire", "fired", "blast", "attack", "strike", "launch", "bang", "boom", "gun", "hit", "boot", "chute"]},
 		"E": {"name": "Deflect", "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce"]},
+		"Q": {"name": "Fourth Wall", "keywords": ["erase", "erases", "destroy", "destroys", "obliterate", "delete", "scribble", "kill", "remove"]},
 	}
 
 
