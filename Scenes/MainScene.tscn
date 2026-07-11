@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://bvgn2ofcb603x"]
+[gd_scene format=3 uid="uid://cjgjsf1mlm21e"]
 
 [ext_resource type="Script" uid="uid://d0nhl0c06ortq" path="res://Scripts/World.gd" id="1_rpqi1"]
 [ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="2_rpqi1"]
@@ -18,7 +18,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Node2D" type="Node2D" unique_id=1743793518]
+[node name="Node2D2" type="Node2D" unique_id=1743793518]
 script = ExtResource("1_rpqi1")
 
 [node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]

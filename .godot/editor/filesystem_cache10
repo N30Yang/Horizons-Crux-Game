@@ -1,8 +1,13 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1783734220
-export_presets.cfg::TextFile::-1::1783734070::0::1::::<><><>0<>0<><>::
+::res://::1783735493
+export_presets.cfg::TextFile::-1::1783735493::0::1::::<><><>0<>0<><>::
+New Game Project.apple-touch-icon.png::CompressedTexture2D::6958209660103019596::1783735329::1783735335::1::::<><><>0<>0<>dbc6568e2f1584245e53aac8d223d898<>res://.godot/imported/New Game Project.apple-touch-icon.png-1053edc047b72a587254f5a6b8dac3dd.ctex::
+New Game Project.icon.png::CompressedTexture2D::8681467722094331793::1783735329::1783735335::1::::<><><>0<>0<>55ef2a87b27a7fb86041ff3fe560e18c<>res://.godot/imported/New Game Project.icon.png-8dc00be1bbe50f209432347e48f644fb.ctex::
+New Game Project.png::CompressedTexture2D::5389996632454560419::1783735329::1783735335::1::::<><><>0<>0<>b1b08803b1525c522e451e9b739cda74<>res://.godot/imported/New Game Project.png-8e562578ad3f7044b65342f46aec129a.ctex::
 README.md::TextFile::-1::1783734070::0::1::::<><><>0<>0<><>::
-::res://Assets/::1783734163
+::res://Assets/::1783735335
+BOMB.png::CompressedTexture2D::8420812174725167041::1783735329::1783735335::1::::<><><>0<>0<>969d57c03061076746056911d299f993<>res://.godot/imported/BOMB.png-0d9c83ffdf3361f4b9f31c381e2a87c8.ctex::
+Book.png::CompressedTexture2D::1867866615167026569::1783735329::1783735335::1::::<><><>0<>0<>7e0f4e08e1c679fafd7b2786b19350a8<>res://.godot/imported/Book.png-c3b1d86d1956905a4faa815f1fb8a54e.ctex::
 Heart.png::CompressedTexture2D::2806252311527581645::1783727920::1783733955::1::::<><><>0<>0<>d6f429db44d55b2f66b61f986b02bb1e<>res://.godot/imported/Heart.png-7e43d5c1e840298bd2c202716ad21322.ctex::
 Heart_FINALt.png::CompressedTexture2D::6768371460663246346::1783727920::1783733955::1::::<><><>0<>0<>2f39b8289c5cb82ca1218854838119a8<>res://.godot/imported/Heart_FINALt.png-03fc013b128f9e75b888156c344bd03a.ctex::
 Male-Blonde-Character-Spritesheet.png::CompressedTexture2D::3493083170724985208::1783723756::1783733955::1::::<><><>0<>0<>207163f66322ccf102dbfab23d2278fd<>res://.godot/imported/Male-Blonde-Character-Spritesheet.png-7a04b540b49be0d9e3c6eaf26b00ac86.ctex::
@@ -10,6 +15,7 @@ Male-Character-Spritesheet.png::CompressedTexture2D::8311440635416270646::178372
 Stumpt_FINALt.png::CompressedTexture2D::5909796918676138462::1783727920::1783733955::1::::<><><>0<>0<>3716ddfb8aff89b129b1349892a0478c<>res://.godot/imported/Stumpt_FINALt.png-c0b0115864750b77bdac12e54d3e1f2f.ctex::
 TORNAD0_FRAME_1.png::CompressedTexture2D::4725531093199250334::1783734070::1783734163::1::::<><><>0<>0<>9dcf721246ded577157ad9eecde7c8a2<>res://.godot/imported/TORNAD0_FRAME_1.png-8d74c9f0d4002593209dbe6403753649.ctex::
 TORNAD0_FRAME_2.png::CompressedTexture2D::2914431398754797434::1783734070::1783734163::1::::<><><>0<>0<>c79feb59d12440328888671012d4c243<>res://.godot/imported/TORNAD0_FRAME_2.png-08943a4e7a0bf674525000faab112b59.ctex::
+TORNAD0_FRAME_3.png::CompressedTexture2D::8428235679226734585::1783735329::1783735335::1::::<><><>0<>0<>ba2d86ba145060b4a1f3ee2ecc1ad08b<>res://.godot/imported/TORNAD0_FRAME_3.png-dd9678a67dbe53e7f9fb5dbaa397d6aa.ctex::
 Tree-Breaking_1.png::CompressedTexture2D::3821748784455082854::1783727920::1783733955::1::::<><><>0<>0<>78cdad4d95f1ab0a9e59d4ce93a0dd6d<>res://.godot/imported/Tree-Breaking_1.png-7a07e8a48a42631f933592c8799ba6be.ctex::
 Tree-Breaking_2.png::CompressedTexture2D::940900086497146810::1783727920::1783733955::1::::<><><>0<>0<>711e0712493f36e94799a1cb89ca5834<>res://.godot/imported/Tree-Breaking_2.png-613a3e36a2caca6a1f7308b315ab4a12.ctex::
 Tree-Breaking_3.png::CompressedTexture2D::4388576409835329871::1783727920::1783733955::1::::<><><>0<>0<>e93930c610752868c7d8960915ecaef1<>res://.godot/imported/Tree-Breaking_3.png-276fea523616324d5b4e0455b9565915.ctex::
@@ -19,29 +25,32 @@ Tree_DEAD.png::CompressedTexture2D::3846704789309266617::1783727920::1783733955:
 ::res://Branding/::1783733955
 blank_logo.png::CompressedTexture2D::3866445016109561454::1783692953::1783733955::1::::<><><>0<>0<>9589ff53e1ed3cef5bab8034450546a1<>res://.godot/imported/blank_logo.png-d055bbcf5f599047c0717625eb80e47e.ctex::
 logo.png::CompressedTexture2D::1689782117956812528::1783692953::1783733955::1::::<><><>0<>0<>847de14d914fba1a394f2efa4d7eccf0<>res://.godot/imported/logo.png-2069c407d2323485c71d71268201c72f.ctex::
-::res://GameApplications/::1783731016
+::res://GameApplications/::1783735493
+webgamev1.apple-touch-icon.png::CompressedTexture2D::2642754370512045347::1783735492::1783735936::1::::<><><>0<>0<>12e00257afc9b70d689d7eeeec9e9d51<>res://.godot/imported/webgamev1.apple-touch-icon.png-f7edd9954f2a19758504bba3614f0a0c.ctex::
+webgamev1.icon.png::CompressedTexture2D::5953017224194577753::1783735492::1783735936::1::::<><><>0<>0<>b3a32ffe8b8068c7a4023a3eed5ce3ba<>res://.godot/imported/webgamev1.icon.png-9c06b9609f0858ce9b215e91724dd867.ctex::
+webgamev1.png::CompressedTexture2D::4553781209072843576::1783735492::1783735936::1::::<><><>0<>0<>488ce7036c6ef4ec4e234c917e24d80e<>res://.godot/imported/webgamev1.png-b0378a6ea0210e85b894c75b322d7e92.ctex::
 ::res://Github/::1783734070
-::res://Scenes/::1783734164
-BookScene.tscn::PackedScene::6871470485467583511::1783734164::0::1::::<><><>0<>0<><>::uid://d0nhl0c06ortq::::res://Scripts/World.gd<>uid://feurxenmslyo::::res://UI/Asset 6.png<>uid://brq1rynn6lx0b::::res://UI/Asset 7.png
+::res://Scenes/::1783735366
+BookScene.tscn::PackedScene::6871470485467583511::1783735328::0::1::::<><><>0<>0<><>::uid://b8rlhgdhqmu3u::::res://Scenes/fade.tscn<>uid://b67vyktqabcoi::::res://Scripts/book_scene.gd
 Character.tscn::PackedScene::990950626618391655::1783724053::0::1::::<><><>0<>0<><>::
 CharacterSelector.tscn::PackedScene::3657951014585430385::1783725157::0::1::::<><><>0<>0<><>::uid://644agwul1uvb::::res://Scripts/character_selector.gd
 fade.tscn::PackedScene::4738427653159390492::1783734077::0::1::::<><><>0<>0<><>::
-MainScene.tscn::PackedScene::5417506127220132596::1783734130::0::1::::<><><>0<>0<><>::uid://d0nhl0c06ortq::::res://Scripts/World.gd<>uid://feurxenmslyo::::res://UI/Asset 6.png<>uid://brq1rynn6lx0b::::res://UI/Asset 7.png
+MainScene.tscn::PackedScene::5417506127220132596::1783735366::0::1::::<><><>0<>0<><>::uid://d0nhl0c06ortq::::res://Scripts/World.gd<>uid://feurxenmslyo::::res://UI/Asset 6.png<>uid://brq1rynn6lx0b::::res://UI/Asset 7.png
 Menu.tscn::PackedScene::3442081797488276649::1783729269::0::1::::<><><>0<>0<><>::uid://b6avpqngxc0bg::::res://Scripts/menu.gd<>uid://ycsp2c0bgwbw::::res://Branding/logo.png<>uid://feurxenmslyo::::res://UI/Asset 6.png<>uid://brq1rynn6lx0b::::res://UI/Asset 7.png<>uid://ctwuigy0e1lw8::::res://UI/Asset 8.png
-::res://Scripts/::1783734070
-book_scene.gd::GDScript::4629653395815625268::1783734070::0::1::::<>Node2D<><>0<>0<><>::
+::res://Scripts/::1783735329
+book_scene.gd::GDScript::4629653395815625268::1783735328::0::1::::<>Node2D<><>0<>0<><>::
 character_selector.gd::GDScript::2237482250487216795::1783723756::0::1::::<>Control<><>0<>0<><>::
 fade.gd::GDScript::6458804212077593888::1783734070::0::1::::<>CanvasLayer<><>0<>0<><>::
 GameManager.gd::GDScript::3140251921371989149::1783723756::0::1::::<>Node<><>0<>0<><>::
 menu.gd::GDScript::4563577540988289676::1783723756::0::1::::<>Control<><>0<>0<><>::
-World.gd::GDScript::8941266032866453978::1783734070::0::1::::<>Node2D<><>0<>0<><>::
+World.gd::GDScript::8941266032866453978::1783735329::0::1::::<>Node2D<><>0<>0<><>::
 ::res://UI/::1783734078
 Asset 5.png::CompressedTexture2D::5791670846345202094::1783692953::1783733955::1::::<><><>0<>0<>dfb18678c49c8f5cc140a19014fb6789<>res://.godot/imported/Asset 5.png-20d0f4d59f93afb94cfece6e44bbcd40.ctex::
 Asset 6.png::CompressedTexture2D::360447642381802074::1783692953::1783733955::1::::<><><>0<>0<>f175e8a4ce7efc5f52a55992b1c47458<>res://.godot/imported/Asset 6.png-bc1987845224ecd8afab5a9034d83085.ctex::
 Asset 7.png::CompressedTexture2D::3614271351188326871::1783692953::1783733955::1::::<><><>0<>0<>fd5e3460801835ddec8df80e2f1f3e96<>res://.godot/imported/Asset 7.png-57031f6c893ff7296d4f5b42ffa142ab.ctex::
 Asset 8.png::CompressedTexture2D::6153074686662374121::1783692953::1783733955::1::::<><><>0<>0<>a2f84227f618e528b37ebb9b5e025df0<>res://.godot/imported/Asset 8.png-413c6803dccf03a288681070f71f0ac4.ctex::
 logoNEW.png::CompressedTexture2D::3770599014147723265::1783734070::1783734078::1::::<><><>0<>0<>b23e1d1a2cd8c7453539b2bd8bfa9996<>res://.godot/imported/logoNEW.png-9d1ad3b562be4546dab86c88dd5947a9.ctex::
-::res://Voice/::1783695475
-VoiceInputManager.gd::GDScript::618051271148651233::1783695475::0::1::::<>Node<><>0<>0<><>::
+::res://Voice/::1783735366
+VoiceInputManager.gd::GDScript::618051271148651233::1783735366::0::1::::<>Node<><>0<>0<><>::
 voice_config.json::JSON::-1::1783693820::0::1::::<><><>0<>0<><>::
 VOICE_INTEGRATION final.md::TextFile::-1::1783693820::0::1::::<><><>0<>0<><>::

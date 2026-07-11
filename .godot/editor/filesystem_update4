@@ -1,3 +1,5 @@
-res://Scripts/World.gd
 res://Scenes/MainScene.tscn
+res://Scenes/BookScene.tscn
+res://Scripts/book_scene.gd
+res://Scripts/World.gd
 res://Voice/VoiceInputManager.gd
