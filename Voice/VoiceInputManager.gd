@@ -11,10 +11,14 @@
 
 extends Node
 
-
+signal power_triggered(power_key: String)
+signal listening_started
+signal listening_stopped
+signal recognition_failed(reason: String)
+signal text_recognized(text: String)
 
 # --- Config ------------------------------------------------------------------
-const CONFIG_PATH := "res://voice_config.json"
+const CONFIG_PATH := "res://Voice/voice_config.json"
 const SPEECH_TIMEOUT_MS := 10000 # overwritten by config if present
 
 var confidence_threshold: float = 0.70 # 0.0 - 1.0
@@ -115,14 +119,114 @@ func _setup_js_bridge() -> void:
 		return
 	_js_available = true
 
-	# JS pushes results back by calling window.godotVoiceResult(jsonString).
-	# We register a Godot-side callback and hand it to the page.
+	
+	JavaScriptBridge.eval(_BRIDGE_JS, true)
+
+	
 	_js_callback_ref = JavaScriptBridge.create_callback(_on_js_result)
 	var window = JavaScriptBridge.get_interface("window")
 	if window != null:
 		window.godotVoiceCallback = _js_callback_ref
-		# Tell the bridge we're wired up. bridge polls for this if it loads first.
 		JavaScriptBridge.eval("if (window.godotVoiceReady) window.godotVoiceReady();", true)
+
+
+	const _BRIDGE_JS := """
+(function () {
+	if (window.__voiceBridgeInstalled) return;
+	window.__voiceBridgeInstalled = true;
+
+	function sendToGodot(obj) {
+		var json = JSON.stringify(obj);
+		if (typeof window.godotVoiceCallback === "function") {
+			try { window.godotVoiceCallback(json); }
+			catch (e) { console.warn("[voice_bridge] callback threw:", e); }
+		} else {
+			console.log("[voice_bridge] (no Godot callback yet):", json);
+		}
+	}
+
+	// Unlock audio on first user gesture (browser autoplay policy).
+	function resumeAudio() {
+		try {
+			var AC = window.AudioContext || window.webkitAudioContext;
+			if (AC) {
+				if (!window.__voiceAC) window.__voiceAC = new AC();
+				if (window.__voiceAC.state === "suspended") window.__voiceAC.resume();
+			}
+		} catch (e) {}
+	}
+	["pointerdown", "keydown", "touchstart"].forEach(function (evt) {
+		window.addEventListener(evt, resumeAudio, { once: false });
+	});
+
+	var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+	var recognition = null;
+	var listening = false;
+	var gotResult = false;
+	var firedSet = null;
+
+	// Fire every word the instant it appears (including the still-interim last
+	// word) so single power words trigger without waiting for end-of-speech
+	// silence. Dedupe by exact string so a stable interim word only sends once.
+	function streamWords(fullText) {
+		var words = fullText.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+		for (var i = 0; i < words.length; i++) {
+			if (firedSet[words[i]]) continue;
+			firedSet[words[i]] = true;
+			sendToGodot({ type: "result", text: words[i], confidence: 1.0 });
+			gotResult = true;
+		}
+	}
+
+	function buildRecognition() {
+		var r = new SR();
+		r.lang = "en-US";
+		r.interimResults = true;
+		r.maxAlternatives = 1;
+		r.continuous = true;
+		r.onstart = function () { listening = true; gotResult = false; firedSet = {}; };
+		r.onresult = function (ev) {
+			var full = "";
+			for (var k = 0; k < ev.results.length; k++) full += ev.results[k][0].transcript + " ";
+			streamWords(full);
+		};
+		r.onerror = function (ev) {
+			console.warn("[voice_bridge] recognition error:", ev.error);
+			sendToGodot({ type: "error", reason: ev.error || "unknown" });
+		};
+		r.onend = function () {
+			listening = false;
+			if (!gotResult) sendToGodot({ type: "nomatch" });
+			sendToGodot({ type: "end" });
+		};
+		return r;
+	}
+
+	window.startVoiceRecognition = function () {
+		resumeAudio();
+		if (!SR) { sendToGodot({ type: "error", reason: "unsupported" }); return; }
+		if (listening) return;
+		if (!recognition) recognition = buildRecognition();
+		try {
+			recognition.start();
+		} catch (e) {
+			setTimeout(function () {
+				try { recognition.start(); }
+				catch (e2) { sendToGodot({ type: "error", reason: "start_failed" }); }
+			}, 120);
+		}
+	};
+
+	window.stopVoiceRecognition = function () {
+		if (recognition && listening) {
+			try { recognition.stop(); } catch (e) {}
+		}
+	};
+
+	window.godotVoiceReady = window.godotVoiceReady || function () {};
+	console.log("[voice_bridge] injected from GDScript. SpeechRecognition:", !!SR);
+})();
+"""
 
 
 func _has_js() -> bool:
@@ -234,7 +338,7 @@ func _handle_recognized_text(text: String, speech_conf: float) -> void:
 		var pct := int(round(blended * 100.0))
 		print("[VOICE] Recognized: \"%s\" | Matched: \"%s\" @ %d%% | Power: %s"
 			% [text, result["keyword"], pct, result["power"]])
-		emit_signal("power_triggered", result["power"])
+		power_triggered.emit(result["power"])
 	else:
 		var pct := int(round(blended * 100.0))
 		print("[VOICE] Recognized: \"%s\" | Best: \"%s\" @ %d%% | below threshold, no trigger."
@@ -323,7 +427,7 @@ func _input(event: InputEvent) -> void:
 			if FALLBACK_KEYS.has(event.keycode):
 				var pk: String = FALLBACK_KEYS[event.keycode]
 				print("[VOICE] Keyboard fallback -> Power: %s" % pk)
-				emit_signal("power_triggered", pk)
+				power_triggered.emit(pk)
 
 
 # =============================================================================
