@@ -5,20 +5,8 @@
   "speech_timeout_ms": 10000,
   "powers": {
 	"W": {
-	  "name": "Shapeshift",
-	  "keywords": ["shapeshift", "dragon", "transform", "morph"]
-	},
-	"E": {
-	  "name": "Flight",
-	  "keywords": ["flight", "fly", "ascend", "rise", "up"]
-	},
-	"Q": {
-	  "name": "4th Wall",
-	  "keywords": ["wall", "break", "glitch", "reality"]
-	},
-	"R": {
-	  "name": "Consequences",
-	  "keywords": ["storm", "passes", "freeze", "time", "clear", "plummet", "fall"]
+	  "name": "Shoot",
+	  "keywords": ["shoot", "fire", "rocket", "shot"]
 	}
   }
 }

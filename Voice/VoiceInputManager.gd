@@ -95,10 +95,7 @@ func _load_config() -> void:
 
 func _load_default_powers() -> void:
 	_powers = {
-		"W": {"name": "Shapeshift", "keywords": ["shapeshift", "dragon", "transform", "morph"]},
-		"E": {"name": "Flight", "keywords": ["flight", "fly", "ascend", "rise", "up"]},
-		"Q": {"name": "4th Wall", "keywords": ["wall", "break", "glitch", "reality"]},
-		"R": {"name": "Consequences", "keywords": ["storm", "passes", "freeze", "time", "clear", "plummet", "fall"]},
+		"W": {"name": "Shoot", "keywords": ["shoot", "fire", "rocket", "shot"]},
 	}
 
 
