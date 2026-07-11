@@ -1,4 +1,4 @@
-<p allign="center">
+<p align="center">
 <img width="164" height="170" alt="Tree-Normal" src="https://github.com/user-attachments/assets/695265f7-ef27-4bdc-9cbf-c651c490d88c" />
 </p>
 
