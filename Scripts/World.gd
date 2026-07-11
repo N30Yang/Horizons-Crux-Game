@@ -57,6 +57,7 @@ var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
 # Burning person: runs in from a side, torches the tree on contact.
 var runner_moving: bool = false
 var runner_hit: bool = false
+var runner_erasing: bool = false  # mid fourth-wall erase; block relaunch til done
 var runner_dir: float = 1.0
 var plane_moving: bool = false
 var plane_frozen: bool = false  # held still during the fourth-wall attack
@@ -364,7 +365,7 @@ func _on_timer_timeout() -> void:
 		launch_plane()
 	if not tornado_moving and randf() < 0.7:
 		launch_tornado()
-	if not runner_moving and randf() < 0.5:
+	if not runner_moving and not runner_erasing and randf() < 0.5:
 		launch_runner()
 	if not plane_moving and not tornado_moving:
 		if randf() < 0.5:
@@ -394,6 +395,7 @@ func erase_power() -> void:
 	if runner_moving and not runner_hit:
 		runner_hit = true
 		runner_moving = false
+		runner_erasing = true  # keep the timer from relaunching him mid-erase
 		_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
 		print("[GAME] Fourth wall: runner erased!")
 	elif plane_moving:
@@ -463,6 +465,7 @@ func _fourth_wall_fx(target: Node2D, erase_target: bool, steps: int, draw_time: 
 		if erase_target:
 			target.visible = false
 			target.modulate = Color.WHITE
+			runner_erasing = false  # ok to spawn runners again
 		elif target == plane:
 			# bomber attack over: unfreeze n land the half-hp hit
 			plane_frozen = false
