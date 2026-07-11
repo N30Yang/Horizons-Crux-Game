@@ -418,23 +418,23 @@ func erase_power() -> void:
 		return
 	# priority: runner -> tornado -> bomber. freeze the target so the timer
 	# cant relaunch/clobber it, hide it (or dmg the plane) when the fx ends.
-	if runner_moving and not runner_hit:
-		erase_active = true
-		runner_erasing = true
-		runner_hit = true  # block tree-collision dmg while frozen
-		_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
-		print("[GAME] Fourth wall: runner erased!")
-	elif tornado_moving and not tornado_hit:
+	#if runner_moving and not runner_hit:
+		#erase_active = true
+		#runner_erasing = true
+		#runner_hit = true  # block tree-collision dmg while frozen
+		#_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
+		#print("[GAME] Fourth wall: runner erased!")
+	if tornado_moving and not tornado_hit:
 		erase_active = true
 		tornado_erasing = true
 		tornado_hit = true
 		_fourth_wall_fx(tornado, true, 31, 2.3, 1.4)
 		print("[GAME] Fourth wall: tornado erased!")
-	elif plane_moving:
-		erase_active = true
-		plane_frozen = true  # freeze the bomber for the whole ~5s attack
-		_fourth_wall_fx(plane, false, 75, 3.4, 1.6)
-		print("[GAME] Fourth wall: bomber scribbled for half hp!")
+	#elif plane_moving:
+		#erase_active = true
+		#plane_frozen = true  # freeze the bomber for the whole ~5s attack
+		#_fourth_wall_fx(plane, false, 75, 3.4, 1.6)
+		#print("[GAME] Fourth wall: bomber scribbled for half hp!")
 	else:
 		print("[GAME] Fourth wall: nothin to erase.")
 
