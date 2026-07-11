@@ -1,0 +1,19 @@
+<<<<<<< Updated upstream
+[gd_scene format=3 uid="uid://yrme2ruserio"]
+
+[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="1_vum2m"]
+[ext_resource type="PackedScene" uid="uid://4ipleofxwbsi" path="res://fade.tscn" id="2_5rtra"]
+=======
+[gd_scene format=3 uid="uid://c0k4np3isyvbg"]
+
+[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="1_vum2m"]
+[ext_resource type="PackedScene" uid="uid://b16ymwtu0cibl" path="res://fade.tscn" id="2_5rtra"]
+>>>>>>> Stashed changes
+
+[node name="BookScene" type="Node2D" unique_id=2093213357]
+
+[node name="Asset6" type="Sprite2D" parent="." unique_id=220617356]
+position = Vector2(636, 147)
+texture = ExtResource("1_vum2m")
+
+[node name="Fade" parent="." unique_id=1937426827 instance=ExtResource("2_5rtra")]

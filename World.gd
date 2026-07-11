@@ -7,7 +7,11 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	VoiceInput.power_triggered.connect(_on_voice_power)
+<<<<<<< Updated upstream
+	#VoiceInput.power_triggered.connect(_on_voice_power)
+=======
+#	VoiceInput.power_triggered.connect(_on_voice_power)
+>>>>>>> Stashed changes
 	timer.start()
 	
 	pass # Replace with function body.

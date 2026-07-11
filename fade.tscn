@@ -1,0 +1,17 @@
+<<<<<<< Updated upstream
+[gd_scene format=3 uid="uid://4ipleofxwbsi"]
+
+[ext_resource type="Script" path="res://Scripts/fade.gd" id="1_bg7ga"]
+=======
+[gd_scene format=3 uid="uid://b16ymwtu0cibl"]
+
+[ext_resource type="Script" uid="uid://cyaxtdmh1hsxs" path="res://Scripts/fade.gd" id="1_bg7ga"]
+>>>>>>> Stashed changes
+
+[node name="Fade" type="CanvasLayer" unique_id=1937426827]
+script = ExtResource("1_bg7ga")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1283995914]
+offset_right = 1153.0
+offset_bottom = 646.0
+color = Color(0, 0.12448048, 0.12655637, 1)

@@ -9,8 +9,7 @@ var should_move: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	VoiceInput.power_triggered.connect(_on_voice_power)
-	VoiceInput.start_listening() 
+#	VoiceInput.power_triggered.connect(_on_voice_power)
 	timer.start()
 	tornado.play()
 
