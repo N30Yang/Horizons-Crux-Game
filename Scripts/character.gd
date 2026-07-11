@@ -23,6 +23,7 @@ const ANIMAL_POWERS := {
 	"BLOBFISH": "blobfish",
 	"BIRD": "bird",
 	"HUMAN": "human",
+	"LION": "lion"
 }
 
 
@@ -48,7 +49,7 @@ func _on_node_2d_2_shapeshift(animal: Variant) -> void:
 # Pick a random animal. Used by the shapeshift signal and the "shapeshift"
 # voice word.
 func shapeshift_random() -> void:
-	var animals := ["bear", "capybara", "blobfish", "bird", "human"]
+	var animals := ["bear", "capybara", "blobfish", "bird", "human","lion" ]
 	GameManager.currentanimal = animals[randi() % animals.size()]
 	print("[SHAPESHIFT] random -> ", GameManager.currentanimal)
 
@@ -122,6 +123,9 @@ func _physics_process(delta: float) -> void:
 			sprite.play("blobfish")
 		if (GameManager.currentanimal == "bird"):
 			sprite.play("bird")
+		if (GameManager.currentanimal == "lion"):
+			sprite.play("lion")
+		
 		
 		
 	else:
@@ -138,6 +142,8 @@ func _physics_process(delta: float) -> void:
 			sprite.play("blobfish")
 		if (GameManager.currentanimal == "bird"):
 			sprite.play("bird")
+		if (GameManager.currentanimal == "lion"):
+			sprite.play("lionstill")
 		
 		
 	move_and_slide()
