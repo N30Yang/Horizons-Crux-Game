@@ -62,9 +62,12 @@ var tornado_erasing: bool = false  # frozen mid fourth-wall erase
 var tornado_dir: float = 1.0  # +1 travels right, -1 travels left
 
 var erase_active: bool = false  # only ONE pencil+eraser can exist at a time
+const ERASE_COOLDOWN_MS := 1000  # min gap between finishing one erase and starting the next
+var erase_ready_at: int = 0      # Time.get_ticks_msec() the next erase is allowed
 # Burning person: runs in from a side, torches the tree on contact.
 var runner_moving: bool = false
 var runner_hit: bool = false
+var _runner_burn_tween: Tween = null  # burn/flash tween; killed if runner relaunches
 var runner_erasing: bool = false  # mid fourth-wall erase; block relaunch til done
 var runner_dir: float = 1.0
 var plane_moving: bool = false
@@ -112,6 +115,27 @@ var firemantime:bool = false
 var win: bool =false
 var loss:bool =false
 
+# --- Wave director -----------------------------------------------------------
+# TUTORIAL: one enemy at a time, gated on the player DEFEATING it (teaches each
+# power). Then DIRECTOR: weighted 1-per-tick spawner with a cap + interval that
+# ramp with survival time. Never spawns the same type twice in a row.
+enum Phase { TUTORIAL, DIRECTOR }
+var phase: int = Phase.TUTORIAL
+var run_time: float = 0.0            # survival seconds since director started
+var last_spawn_type: String = ""     # for no-repeat variety
+
+const TUTORIAL_ORDER := ["plane", "tornado", "runner"]
+const TUTORIAL_GAP := 1.2            # beat between taught rounds
+const TUTORIAL_RETRY := 0.6          # beat before re-sending an un-defeated enemy
+
+const RAMP_SECONDS := 90.0           # time to reach peak difficulty
+const CAP_MIN := 1                   # max enemies alive, start
+const CAP_MAX := 3                   # max enemies alive, peak
+const INTERVAL_SLOW := 3.5           # seconds between spawns, start
+const INTERVAL_FAST := 1.2           # seconds between spawns, peak
+const HARDEST_DURATION := 10.0       # peak-phase window length (seconds)
+var _hardest_done: bool = false      # peak event only fires once
+
 func _ready() -> void:   # prep var
 	Engine.time_scale = 1.0
 	VoiceInput.power_triggered.connect(_on_voice_power)
@@ -132,8 +156,8 @@ func _ready() -> void:   # prep var
 	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
-	timer.start()
 	tornado.play()
+	_run_intro()  # tutorial rounds, then hands off to the director
 
 # the big loop, runs every frame. moves everything around n checks stuff
 func _process(delta: float) -> void:
@@ -333,6 +357,8 @@ func shoot_down_bomber() -> void:
 
 # ow, tree takes a hit. dies at 0
 func damage_tree(amount: int = 1) -> void:
+	if phase == Phase.TUTORIAL:
+		return  # tutorial is damage-free; enemies still resolve, just no tree HP loss
 	if tree_health <= 0:
 		return
 	tree_health -= amount
@@ -384,25 +410,124 @@ func _on_tree_hitbox_entered(area: Area2D) -> void:
 	elif src == runner and runner_moving and not runner_hit:
 		_burn_tree()
 
-# every tick roll the dice n maybe throw some enemies at the tree
+# --- Tutorial: teach each enemy one at a time, gated on defeating it ----------
+func _run_intro() -> void:
+	await get_tree().create_timer(1.0).timeout  # brief breather before round 1
+	for kind in TUTORIAL_ORDER:
+		if tree_health <= 0:
+			return
+		await _tutorial_round(kind)
+		await get_tree().create_timer(TUTORIAL_GAP).timeout
+	_start_director()
+
+# Send one enemy; keep re-sending until the player actually DEFEATS it (an
+# escape or a tree-hit doesn't count, so the power gets learned).
+func _tutorial_round(kind: String) -> void:
+	while tree_health > 0:
+		_spawn_kind(kind)
+		while _kind_active(kind):
+			await get_tree().process_frame
+		if _kind_defeated(kind):
+			return
+		await get_tree().create_timer(TUTORIAL_RETRY).timeout
+
+# --- Director: weighted 1-per-tick spawner with ramping cap + interval --------
+func _start_director() -> void:
+	phase = Phase.DIRECTOR
+	run_time = 0.0
+	timer.wait_time = INTERVAL_SLOW
+	timer.start()
+
+# Peak difficulty reached (90s). Runs a stub each second for 10s.
+func _hardest_phase() -> void:
+	var t := 0.0
+	while t < HARDEST_DURATION and tree_health > 0:
+		_hardest_tick()
+		await get_tree().create_timer(1.0).timeout
+		t += 1.0
+
+# TODO: hardest-phase event. Fill in later.
+func _hardest_tick() -> void:
+	pass
+
 func _on_timer_timeout() -> void:
-	var roll := randf()
-	if not plane_moving and roll < 0.7:
-		launch_plane()
-	if not tornado_moving and randf() < 0.7:
-		launch_tornado()
-	if not runner_moving and not runner_erasing and randf() < 0.5:
-		launch_runner()
-	if not plane_moving and not tornado_moving:
-		if randf() < 0.5:
-			launch_plane()
-		else:
-			launch_tornado()
-	timer.wait_time = randf_range(1.5, 6.0)
+	if phase != Phase.DIRECTOR:
+		return
+	if tree_health <= 0:
+		timer.stop()
+		return
+
+	run_time += timer.wait_time
+	var d := clampf(run_time / RAMP_SECONDS, 0.0, 1.0)  # 0 start -> 1 peak
+	var cap := CAP_MIN + int(round(float(CAP_MAX - CAP_MIN) * d))
+
+	# Peak reached (>= RAMP_SECONDS): fire the hardest-phase event once.
+	if d >= 1.0 and not _hardest_done:
+		_hardest_done = true
+		_hardest_phase()
+
+	if _alive_count() < cap:
+		var kind := _pick_enemy()
+		if kind != "":
+			_spawn_kind(kind)
+			last_spawn_type = kind
+
+	# Spawns get closer together as difficulty ramps; small jitter avoids rhythm.
+	timer.wait_time = maxf(0.5, lerpf(INTERVAL_SLOW, INTERVAL_FAST, d) + randf_range(-0.3, 0.3))
+
+# Weighted (equal) pick among types that aren't alive and aren't the last one.
+func _pick_enemy() -> String:
+	var pool: Array = _spawnable_types(true)
+	if pool.is_empty():
+		pool = _spawnable_types(false)  # relax no-repeat if that's all that's left
+	if pool.is_empty():
+		return ""
+	return pool[randi() % pool.size()]
+
+# Types not currently on the field. When avoid_repeat, also drop the last spawn.
+func _spawnable_types(avoid_repeat: bool) -> Array:
+	var out: Array = []
+	if not plane_moving and not (avoid_repeat and last_spawn_type == "plane"):
+		out.append("plane")
+	if not tornado_moving and not (avoid_repeat and last_spawn_type == "tornado"):
+		out.append("tornado")
+	if not runner_moving and not runner_erasing and not (avoid_repeat and last_spawn_type == "runner"):
+		out.append("runner")
+	return out
+
+func _alive_count() -> int:
+	return (1 if plane_moving else 0) + (1 if tornado_moving else 0) + (1 if runner_moving else 0)
+
+func _spawn_kind(kind: String) -> void:
+	match kind:
+		"plane": launch_plane()
+		"tornado": launch_tornado()
+		"runner": launch_runner()
+
+# Enemy still on the field (not yet resolved)?
+func _kind_active(kind: String) -> bool:
+	match kind:
+		"plane": return plane_moving
+		"tornado": return tornado_moving
+		"runner": return runner_moving or runner_erasing
+	return false
+
+# Was it DEFEATED (vs escaping / hitting the tree)?
+func _kind_defeated(kind: String) -> bool:
+	match kind:
+		"plane": return bomber_health <= 0.0   # shot down (else it flew off)
+		"tornado": return not tornado_hit      # deflected or erased, didn't hit tree
+		"runner": return not runner_hit        # erased, didn't burn tree
+	return true
 
 
 
 func launch_runner() -> void:
+	# Kill any lingering burn/flash tween from a previous runner, or it clobbers
+	# this fresh one (forces flashing + hides it -> invisible runner).
+	if _runner_burn_tween != null and _runner_burn_tween.is_valid():
+		_runner_burn_tween.kill()
+	_runner_burn_tween = null
 	var vw := get_viewport_rect().size.x
 	var from_left := randf() < 0.5
 	runner_dir = 1.0 if from_left else -1.0
@@ -421,15 +546,18 @@ func erase_power() -> void:
 	# only one pencil+eraser at a time, or it gets messy/broken
 	if erase_active:
 		return
+	# 1s cooldown between erases
+	if Time.get_ticks_msec() < erase_ready_at:
+		return
 	# priority: runner -> tornado -> bomber. freeze the target so the timer
 	# cant relaunch/clobber it, hide it (or dmg the plane) when the fx ends.
-	#if runner_moving and not runner_hit:
-		#erase_active = true
-		#runner_erasing = true
-		#runner_hit = true  # block tree-collision dmg while frozen
-		#_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
-		#print("[GAME] Fourth wall: runner erased!")
-	if tornado_moving and not tornado_hit:
+	if runner_moving and not runner_hit:
+		erase_active = true
+		runner_erasing = true
+		runner_hit = true  # block tree-collision dmg while frozen
+		_fourth_wall_fx(runner, true, 31, 2.3, 1.4)
+		print("[GAME] Fourth wall: runner erased!")
+	elif tornado_moving and not tornado_hit:
 		erase_active = true
 		tornado_erasing = true
 		tornado_hit = true
@@ -515,7 +643,8 @@ func _fourth_wall_fx(target: Node2D, erase_target: bool, steps: int, draw_time: 
 			# bomber attack over: unfreeze n land the half-hp hit
 			plane_frozen = false
 			hit_bomber(bomber_max_health * 0.5)
-		erase_active = false)
+		erase_active = false
+		erase_ready_at = Time.get_ticks_msec() + ERASE_COOLDOWN_MS)
 
 # reveal the squiggle up to the pencil's current spot
 func _pencil_draw(t: float, scrib: Line2D, pencil: Sprite2D, pts: Array) -> void:
@@ -539,6 +668,7 @@ func _burn_tree() -> void:
 	runner.play("boom")
 
 	var tw := create_tween()
+	_runner_burn_tween = tw
 	for n in 10:
 		tw.tween_property(runner, "modulate", Color.RED, 0.06)
 		tw.tween_property(runner, "modulate", Color.WHITE, 0.06)
