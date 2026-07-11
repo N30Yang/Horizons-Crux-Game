@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://c45ud55o4dasl"]
 
 [ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="1_51cc1"]
-<<<<<<< Updated upstream
 [ext_resource type="Script" uid="uid://b6avpqngxc0bg" path="res://Scripts/menu.gd" id="1_dsi1o"]
 [ext_resource type="Texture2D" uid="uid://ycsp2c0bgwbw" path="res://Branding/logo.png" id="2_8vojq"]
 [ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="4_7ksh1"]
@@ -72,21 +71,3 @@ stretch_mode = 4
 [connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MenuButton" to="." method="_on_menu_button_pressed"]
 [connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]
-=======
-[ext_resource type="Script" uid="uid://b67vyktqabcoi" path="res://Scripts/book_scene.gd" id="1_p78a5"]
-[ext_resource type="PackedScene" uid="uid://b8rlhgdhqmu3u" path="res://Scenes/fade.tscn" id="3_lej1j"]
-
-[node name="Node2D" type="Node2D" unique_id=1650456080]
-script = ExtResource("1_p78a5")
-
-[node name="Asset6" type="Sprite2D" parent="." unique_id=150281935]
-position = Vector2(589, 95)
-texture = ExtResource("1_51cc1")
-
-[node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_lej1j")]
-
-[node name="Timer" type="Timer" parent="." unique_id=2073477327]
-wait_time = 2.547
-
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
->>>>>>> Stashed changes
