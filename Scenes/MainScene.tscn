@@ -26,6 +26,17 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_u0f01"]
+radius = 212.39078
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_u0f01"]
+radius = 29.770157
+height = 111.155426
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xwtgb"]
+radius = 18.794144
+height = 74.379944
+
 [node name="Node2D2" type="Node2D" unique_id=1743793518]
 script = ExtResource("1_rpqi1")
 
@@ -35,9 +46,15 @@ scale = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_ilkqt")
 
 [node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
-position = Vector2(1365, 33)
+position = Vector2(1364, 37)
 scale = Vector2(0.35813493, 0.4571231)
 texture = ExtResource("2_rpqi1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plane" unique_id=1934043721]
+position = Vector2(-55.84487, 164.0696)
+rotation = 1.5422868
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_u0f01")
 
 [node name="Bomb" type="Sprite2D" parent="." unique_id=1451402138]
 visible = false
@@ -59,6 +76,16 @@ texture = ExtResource("6_0iob3")
 position = Vector2(576, 324)
 scale = Vector2(2.5, 2.5)
 texture = ExtResource("7_tree")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tree" unique_id=1776806552]
+position = Vector2(3.2, -9.2)
+rotation = -1.5881516
+shape = SubResource("CapsuleShape2D_u0f01")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Tree" unique_id=97777073]
+position = Vector2(9.999998, 44)
+rotation = -0.052323785
+shape = SubResource("CapsuleShape2D_xwtgb")
 
 [node name="Timer" type="Timer" parent="." unique_id=1942069986]
 wait_time = 5.0
