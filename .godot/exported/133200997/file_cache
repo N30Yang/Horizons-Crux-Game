@@ -1,6 +1,6 @@
-res://Scenes/BookScene.tscn::392f416db7bf93d0e3292b61b3b699ad::1783735328::res://.godot/exported/133200997/export-86cb972dfcfc93b18e6a67cd8f7d5005-BookScene.scn
-res://Scenes/Character.tscn::26aae7bfb8ff1125f1412ffec4866f89::1783724053::res://.godot/exported/133200997/export-c870f3e3eba97a833a8353de4902fd76-Character.scn
-res://Scenes/CharacterSelector.tscn::4be76a9021ee66e0c47dd8f986bf44d4::1783725157::res://.godot/exported/133200997/export-21305ca09bbf6b3cea72bc161e7f969d-CharacterSelector.scn
-res://Scenes/MainScene.tscn::994fe6373fb337afc6325c55ffa4fdb3::1783735366::res://.godot/exported/133200997/export-d70913d46bf01eab1d3098718c300f2e-MainScene.scn
-res://Scenes/Menu.tscn::e283ddc41a0d8e84fd611ac5c0a9a0dc::1783729269::res://.godot/exported/133200997/export-c66ca9adccb575bddabad42984d7fed5-Menu.scn
-res://Scenes/fade.tscn::f7eed311b953630e3dbae71a7c32a25c::1783734077::res://.godot/exported/133200997/export-cfb12899f1f73139226bea2704190449-fade.scn
+res://Scenes/BookScene.tscn::3621f4a10938d0eaeb462f8f7dfad48b::1783735253::res://.godot/exported/133200997/export-86cb972dfcfc93b18e6a67cd8f7d5005-BookScene.scn
+res://Scenes/Character.tscn::26aae7bfb8ff1125f1412ffec4866f89::1783730393::res://.godot/exported/133200997/export-c870f3e3eba97a833a8353de4902fd76-Character.scn
+res://Scenes/CharacterSelector.tscn::4be76a9021ee66e0c47dd8f986bf44d4::1783729442::res://.godot/exported/133200997/export-21305ca09bbf6b3cea72bc161e7f969d-CharacterSelector.scn
+res://Scenes/MainScene.tscn::439b80aec9ea0144b1f6d73d206eaf7d::1783733367::res://.godot/exported/133200997/export-d70913d46bf01eab1d3098718c300f2e-MainScene.scn
+res://Scenes/Menu.tscn::e283ddc41a0d8e84fd611ac5c0a9a0dc::1783729442::res://.godot/exported/133200997/export-c66ca9adccb575bddabad42984d7fed5-Menu.scn
+res://Scenes/fade.tscn::f795f1d63f1243bf2f79f3655a3905f9::1783736752::res://.godot/exported/133200997/export-cfb12899f1f73139226bea2704190449-fade.scn
