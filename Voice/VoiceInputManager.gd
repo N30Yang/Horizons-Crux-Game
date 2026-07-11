@@ -21,8 +21,8 @@ signal text_recognized(text: String)
 const CONFIG_PATH := "res://Voice/voice_config.json"
 const SPEECH_TIMEOUT_MS := 10000 # overwritten by config if present
 
-var confidence_threshold: float = 0.70 # 0.0 - 1.0
-var fuzzy_max_distance: int = 2
+var confidence_threshold: float = 0.55 # 0.0 - 1.0
+var fuzzy_max_distance: int = 3
 
 # power_key -> { "name": String, "keywords": Array[String] }
 var _powers: Dictionary = {}
@@ -95,7 +95,8 @@ func _load_config() -> void:
 
 func _load_default_powers() -> void:
 	_powers = {
-		"W": {"name": "Shoot", "keywords": ["shoot", "fire", "rocket", "shot"]},
+		"W": {"name": "Shoot", "keywords": ["shoot", "shoots", "shot", "shots", "fire", "fired", "blast", "attack", "strike", "launch", "bang", "boom", "gun", "hit", "boot", "chute"]},
+		"E": {"name": "Deflect", "keywords": ["deflect", "block", "shield", "guard", "defend", "protect", "parry", "repel", "push", "stop", "wall", "wind", "away", "back", "blow", "bounce"]},
 	}
 
 
@@ -157,22 +158,60 @@ const _BRIDGE_JS := """
 		window.addEventListener(evt, resumeAudio, { once: false });
 	});
 
+	// --- Mic volume meter (own getUserMedia + AnalyserNode) ------------------
+	// Godot's AudioStreamMicrophone is silent on web, so measure RMS here and
+	// expose window.__voiceLevel (0..1). Godot polls it every frame.
+	window.__voiceLevel = 0.0;
+	function initMicMeter() {
+		if (window.__micMeterInit) return;
+		window.__micMeterInit = true;
+		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+		navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+			var AC = window.AudioContext || window.webkitAudioContext;
+			if (!AC) return;
+			var ctx = window.__voiceAC || new AC();
+			window.__voiceAC = ctx;
+			var src = ctx.createMediaStreamSource(stream);
+			var an = ctx.createAnalyser();
+			an.fftSize = 512;
+			src.connect(an);
+			var buf = new Uint8Array(an.fftSize);
+			(function tick() {
+				an.getByteTimeDomainData(buf);
+				var sum = 0;
+				for (var i = 0; i < buf.length; i++) {
+					var v = (buf[i] - 128) / 128;
+					sum += v * v;
+				}
+				window.__voiceLevel = Math.sqrt(sum / buf.length);
+				requestAnimationFrame(tick);
+			})();
+		}).catch(function (e) {
+			console.warn("[voice_bridge] mic meter failed:", e);
+		});
+	}
+
 	var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 	var recognition = null;
 	var listening = false;
 	var gotResult = false;
-	var firedSet = null;
+	var firedCounts = null; // word -> times already fired THIS utterance
 
-	// Fire every word the instant it appears (including the still-interim last
-	// word) so single power words trigger without waiting for end-of-speech
-	// silence. Dedupe by exact string so a stable interim word only sends once.
-	function streamWords(fullText) {
-		var words = fullText.toLowerCase().split(/[^a-z]+/).filter(Boolean);
-		for (var i = 0; i < words.length; i++) {
-			if (firedSet[words[i]]) continue;
-			firedSet[words[i]] = true;
-			sendToGodot({ type: "result", text: words[i], confidence: 1.0 });
-			gotResult = true;
+	// Fire each word occurrence as it appears. Count-based, not dedupe: if the
+	// interim grows "shoot" -> "shoot shoot" -> "shoot shoot shoot", each new
+	// occurrence fires. firedCounts only ever increases within an utterance
+	// (interim revisions that shrink the count fire nothing), and resets when
+	// the result finalizes so the next utterance starts fresh.
+	function streamWords(words) {
+		var seen = {};
+		for (var i = 0; i < words.length; i++) seen[words[i]] = (seen[words[i]] || 0) + 1;
+		for (var w in seen) {
+			var already = firedCounts[w] || 0;
+			for (var n = already; n < seen[w]; n++) {
+				sendToGodot({ type: "result", text: w, confidence: 1.0 });
+				gotResult = true;
+			}
+			if (seen[w] > already) firedCounts[w] = seen[w];
 		}
 	}
 
@@ -182,11 +221,12 @@ const _BRIDGE_JS := """
 		r.interimResults = true;
 		r.maxAlternatives = 1;
 		r.continuous = true;
-		r.onstart = function () { listening = true; gotResult = false; firedSet = {}; };
+		r.onstart = function () { listening = true; gotResult = false; firedCounts = {}; };
 		r.onresult = function (ev) {
-			var full = "";
-			for (var k = 0; k < ev.results.length; k++) full += ev.results[k][0].transcript + " ";
-			streamWords(full);
+			var res = ev.results[ev.results.length - 1]; // newest result only
+			var words = res[0].transcript.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+			streamWords(words);
+			if (res.isFinal) firedCounts = {}; // reset so next utterance re-fires
 		};
 		r.onerror = function (ev) {
 			console.warn("[voice_bridge] recognition error:", ev.error);
@@ -202,6 +242,7 @@ const _BRIDGE_JS := """
 
 	window.startVoiceRecognition = function () {
 		resumeAudio();
+		initMicMeter();
 		if (!SR) { sendToGodot({ type: "error", reason: "unsupported" }); return; }
 		if (listening) return;
 		if (!recognition) recognition = buildRecognition();
@@ -230,6 +271,17 @@ const _BRIDGE_JS := """
 func _has_js() -> bool:
 	# JavaScriptBridge only exists on the Web platform.
 	return OS.has_feature("web")
+
+
+# RMS mic level 0..1 from the JS AnalyserNode. Returns -1.0 when unavailable
+# (non-web / no JS bridge) so callers can fall back to AudioServer.
+func get_mic_level() -> float:
+	if not _js_available:
+		return -1.0
+	var v = JavaScriptBridge.eval("(window.__voiceLevel || 0)", true)
+	if v == null:
+		return 0.0
+	return float(v)
 
 
 # Called from JS: godotVoiceCallback([ jsonString ])
@@ -370,6 +422,11 @@ func match_text(text: String) -> Dictionary:
 func _fuzzy_confidence(candidate: String, keyword: String) -> float:
 	if candidate == keyword:
 		return 1.0
+	# Substring containment: "shooting"/"reshoot" ~ "shoot". Catches endings,
+	# plurals, run-together words that Levenshtein alone rejects.
+	if keyword.length() >= 3 and candidate.length() >= 3:
+		if candidate.contains(keyword) or keyword.contains(candidate):
+			return 0.92
 	var dist := _levenshtein(candidate, keyword)
 	if dist > fuzzy_max_distance:
 		return 0.0
