@@ -37,10 +37,15 @@ extends Node2D
 @export var web_mic_gain: float = 5.0    # scales JS RMS (0..1) to bar/damage
 
 const TREE_STAGES := [
-	preload("res://Assets/Tree_DEAD.png"),
-	preload("res://Assets/Tree-Breaking_4.png"),
-	preload("res://Assets/Tree-Breaking_3.png"),   # diffeent phases of the tree
-	preload("res://Assets/Tree-Breaking_2.png"),
+	preload("res://Assets/Stumpt_FINALt.png"),
+	preload("res://Assets/NewTreeFinal8.png"),
+	preload("res://Assets/NewTreeFinal7.png"),   # diffeent phases of the tree
+	preload("res://Assets/NewTreeFinal6.png"),
+	preload("res://Assets/NewTreeFinal5.png"),
+	preload("res://Assets/NewTreeFinal4.png"),
+	preload("res://Assets/NewTreeFinal3.png"),  
+	preload("res://Assets/NewTreeFinal2.png"),
+	preload("res://Assets/NewTreeFinal.png"),
 	preload("res://Assets/Tree-Normal.png"),
 ]
 const MAX_HEALTH := 8   # change for health of tree
@@ -255,7 +260,7 @@ func damage_tree(amount: int = 1) -> void:
 		print("[GAME] The tree has died.")
 
 func update_tree() -> void:
-	tree.texture = TREE_STAGES[ceili(tree_health / 2.0)]
+	tree.texture = TREE_STAGES[ceili(tree_health)]
 	update_health_bar()
 
 func update_health_bar() -> void:
