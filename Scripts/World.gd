@@ -29,4 +29,6 @@ func _on_voice_power(power_key: String) -> void:
 
 
 func _on_timer_timeout() -> void:
-	should_move = not should_move
+	should_move = true
+	
+	pass # Replace with function body.
