@@ -7,6 +7,9 @@ extends Node2D
 @onready var tree: Sprite2D = $Tree
 @onready var jet: Sprite2D = $Jet
 @onready var rocket: Sprite2D = $Rocket
+@onready var background: Sprite2D = $Background
+@onready var foreground: Sprite2D = $Foreground
+@onready var tree_hitbox: Area2D = $Tree/Hitbox
 
 @export var tornado_speed: float = 175
 @export var plane_speed: float = 150
@@ -20,6 +23,11 @@ extends Node2D
 @export var tornado_base_ratio: float = 0.9
 
 @export var hit_range: float = 120.0
+
+@export var bomb_damage: int = 2
+@export var tornado_damage: int = 1
+@export var bomber_max_health: int = 3
+@export var rocket_damage: int = 1
 
 const TREE_STAGES := [
 	preload("res://Assets/Tree_DEAD.png"),
@@ -37,6 +45,7 @@ var plane_moving: bool = false
 var bomb_dropped: bool = false
 var bomb_dropping: bool = false
 var rocket_flying: bool = false
+var bomber_health: int = 0
 var screen_middle: Vector2
 var plane_start_x: float
 var tornado_start_x: float
@@ -45,15 +54,24 @@ var tornado_start_x: float
 var in_hitstop: bool = false
 var sil_bg: ColorRect
 var sil_sprites: Array[CanvasItem] = []
+var sil_hide: Array[CanvasItem] = []
 
 var mic_player: AudioStreamPlayer
 var mic_bus_idx: int = -1
 var vol_fill: ColorRect
 var vol_peak: float = 0.0
 
+const HP_BAR_WIDTH := 360.0
+var hp_fill: ColorRect
+
+const BOMBER_BAR_WIDTH := 90.0
+var bomber_hp_bg: ColorRect
+var bomber_hp_fill: ColorRect
+
 func _ready() -> void:
 	VoiceInput.power_triggered.connect(_on_voice_power)
 	VoiceInput.recognition_failed.connect(_on_voice_mishap)
+	tree_hitbox.area_entered.connect(_on_tree_hitbox_entered)
 	screen_middle = get_viewport_rect().size / 2
 	plane_start_x = plane.position.x
 	tornado_start_x = tornado.position.x
@@ -65,6 +83,7 @@ func _ready() -> void:
 	jet.visible = false
 	rocket.visible = false
 	sil_sprites = [tornado, plane, bomb, tree, jet, rocket]
+	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
 	timer.start()
@@ -72,13 +91,10 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_update_volume_meter(delta)
+	_update_bomber_hp_bar()
 
 	if tornado_moving:
 		tornado.position.x += tornado_speed * delta
-
-		if not tornado_hit and abs(tornado.position.x - tree.position.x) <= hit_range:
-			tornado_hit = true
-			damage_tree()
 		if tornado.position.x > get_viewport_rect().size.x + 100:
 			tornado_moving = false
 			tornado.visible = false
@@ -97,7 +113,7 @@ func _process(delta: float) -> void:
 	if rocket_flying:
 		rocket.position.x -= rocket_speed * delta
 		if rocket.position.x <= plane.position.x:
-			shoot_down_bomber()
+			hit_bomber()
 		elif rocket.position.x < -100:
 			rocket_flying = false
 			rocket.visible = false
@@ -109,9 +125,6 @@ func _process(delta: float) -> void:
 			bomb.position.y = land_y
 			bomb_dropping = false
 			bomb.visible = false
-
-			if abs(bomb.position.x - tree.position.x) <= hit_range:
-				damage_tree()
 
 func drop_bomb() -> void:
 	bomb_dropped = true
@@ -147,21 +160,29 @@ func fire_rocket() -> void:
 	rocket.visible = true
 	rocket_flying = true
 
-func shoot_down_bomber() -> void:
+func hit_bomber() -> void:
 	rocket_flying = false
 	rocket.visible = false
+	bomber_health -= rocket_damage
+	hit_stop()
+	if bomber_health <= 0:
+		shoot_down_bomber()
+	else:
+		print("[GAME] Bomber hit! health: %d" % bomber_health)
+
+func shoot_down_bomber() -> void:
 	plane_moving = false
 	plane.visible = false
 	jet.visible = false
 	bomb_dropping = false
 	bomb.visible = false
 	print("[GAME] Bomber shot down!")
-	hit_stop()
 
-func damage_tree() -> void:
+func damage_tree(amount: int = 1) -> void:
 	if tree_health <= 0:
 		return
-	tree_health -= 1
+	tree_health -= amount
+	tree_health = maxi(tree_health, 0)
 	update_tree()
 	hit_stop()
 	if tree_health <= 0:
@@ -169,6 +190,38 @@ func damage_tree() -> void:
 
 func update_tree() -> void:
 	tree.texture = TREE_STAGES[ceili(tree_health / 2.0)]
+	update_health_bar()
+
+func update_health_bar() -> void:
+	if hp_fill == null:
+		return
+	var frac := clampf(float(tree_health) / float(MAX_HEALTH), 0.0, 1.0)
+	hp_fill.size.x = HP_BAR_WIDTH * frac
+	hp_fill.color = Color(1.0, 0.3, 0.3).lerp(Color(0.3, 1.0, 0.4), frac)
+
+func _update_bomber_hp_bar() -> void:
+	if bomber_hp_fill == null:
+		return
+	var show := plane_moving and plane.visible
+	bomber_hp_bg.visible = show
+	bomber_hp_fill.visible = show
+	if not show:
+		return
+	var top_left := plane.position + Vector2(-BOMBER_BAR_WIDTH * 0.5, 55)
+	bomber_hp_bg.position = top_left + Vector2(-2, -2)
+	bomber_hp_fill.position = top_left
+	var frac := clampf(float(bomber_health) / float(bomber_max_health), 0.0, 1.0)
+	bomber_hp_fill.size.x = BOMBER_BAR_WIDTH * frac
+
+func _on_tree_hitbox_entered(area: Area2D) -> void:
+	var src := area.get_parent()
+	if src == bomb and bomb_dropping:
+		bomb_dropping = false
+		bomb.visible = false
+		damage_tree(bomb_damage)
+	elif src == tornado and tornado_moving and not tornado_hit:
+		tornado_hit = true
+		damage_tree(tornado_damage)
 
 func _on_timer_timeout() -> void:
 	var roll := randf()
@@ -190,6 +243,7 @@ func launch_plane() -> void:
 	bomb_dropped = false
 	bomb_dropping = false
 	plane_moving = true
+	bomber_health = bomber_max_health
 
 func launch_tornado() -> void:
 	tornado.position.x = tornado_start_x
@@ -223,6 +277,9 @@ func _set_silhouette(on: bool) -> void:
 	for s in sil_sprites:
 		if s:
 			s.modulate = Color.BLACK if on else Color.WHITE
+	for h in sil_hide:
+		if h:
+			h.visible = not on
 
 
 func _setup_juice_ui() -> void:
@@ -258,6 +315,38 @@ func _setup_juice_ui() -> void:
 	vol_label.position = vol_bg.position + Vector2(0, -22)
 	vol_label.add_theme_font_size_override("font_size", 14)
 	layer.add_child(vol_label)
+
+	var hp_x := (get_viewport_rect().size.x - HP_BAR_WIDTH) * 0.5
+	var hp_bg := ColorRect.new()
+	hp_bg.color = Color(0, 0, 0, 0.5)
+	hp_bg.size = Vector2(HP_BAR_WIDTH + 8, 34)
+	hp_bg.position = Vector2(hp_x - 4, 20)
+	layer.add_child(hp_bg)
+
+	hp_fill = ColorRect.new()
+	hp_fill.size = Vector2(HP_BAR_WIDTH, 26)
+	hp_fill.position = Vector2(hp_x, 24)
+	layer.add_child(hp_fill)
+
+	var hp_label := Label.new()
+	hp_label.text = "TREE"
+	hp_label.position = Vector2(hp_x, -2)
+	hp_label.add_theme_font_size_override("font_size", 16)
+	layer.add_child(hp_label)
+
+	update_health_bar()
+
+	bomber_hp_bg = ColorRect.new()
+	bomber_hp_bg.color = Color(0, 0, 0, 0.5)
+	bomber_hp_bg.size = Vector2(BOMBER_BAR_WIDTH + 4, 14)
+	bomber_hp_bg.visible = false
+	layer.add_child(bomber_hp_bg)
+
+	bomber_hp_fill = ColorRect.new()
+	bomber_hp_fill.color = Color(1.0, 0.4, 0.3)
+	bomber_hp_fill.size = Vector2(BOMBER_BAR_WIDTH, 10)
+	bomber_hp_fill.visible = false
+	layer.add_child(bomber_hp_fill)
 
 
 func _setup_mic() -> void:
