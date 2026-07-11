@@ -37,7 +37,6 @@ extends Node2D
 @export var web_mic_gain: float = 5.0    # scales JS RMS (0..1) to bar/damage
 
 const TREE_STAGES := [
-	preload("res://Assets/Stumpt_FINALt.png"),
 	preload("res://Assets/NewTreeFinal8.png"),
 	preload("res://Assets/NewTreeFinal7.png"),   # diffeent phases of the tree
 	preload("res://Assets/NewTreeFinal6.png"),
@@ -46,7 +45,7 @@ const TREE_STAGES := [
 	preload("res://Assets/NewTreeFinal3.png"),  
 	preload("res://Assets/NewTreeFinal2.png"),
 	preload("res://Assets/NewTreeFinal.png"),
-	preload("res://Assets/Tree-Normal.png"),
+	preload("res://Assets/NewTreeFinal.png"),
 ]
 const MAX_HEALTH := 8   # change for health of tree
 var tree_health: int = MAX_HEALTH  
@@ -83,8 +82,10 @@ const HP_BAR_WIDTH := 360.0
 var hp_fill: ColorRect         # hp bar vars 
 
 const BOMBER_BAR_WIDTH := 90.0
-var bomber_hp_bg: ColorRect   # hp bar vars 
+var bomber_hp_bg: ColorRect   # hp bar vars
 var bomber_hp_fill: ColorRect
+
+var plane_hurtbox: Area2D  # bomber's hurtbox; rockets detect it via Area2D overlap
 
 func _ready() -> void:   # prep var
 	Engine.time_scale = 1.0
@@ -92,9 +93,9 @@ func _ready() -> void:   # prep var
 	VoiceInput.recognition_failed.connect(_on_voice_mishap)
 	VoiceInput.listening_stopped.connect(_restart_listen)
 	tree_hitbox.area_entered.connect(_on_tree_hitbox_entered)
+	_setup_plane_hurtbox()
 	screen_middle = get_viewport_rect().size / 2
 
-	tree.position = Vector2(screen_middle.x, get_viewport_rect().size.y * bomb_land_ratio)
 	update_tree()
 	bomb.visible = false
 	tornado.visible = false
@@ -136,13 +137,9 @@ func _process(delta: float) -> void:
 		var r: Sprite2D = rockets[i]["node"]
 		var rdir: float = rockets[i]["dir"]
 		r.position.x += rocket_speed * delta * rdir
-		var reached := (rdir < 0.0 and r.position.x <= plane.position.x) \
-			or (rdir > 0.0 and r.position.x >= plane.position.x)
-		if plane_moving and plane.visible and reached:
-			hit_bomber(rockets[i]["dmg"])
-			r.queue_free()
-			rockets.remove_at(i)
-		elif r.position.x < -150 or r.position.x > vw + 150:
+		# Hit detection is via the rocket's Area2D overlapping plane_hurtbox
+		# (_on_rocket_area). Here just cull rockets that fly off-screen.
+		if r.position.x < -150 or r.position.x > vw + 150:
 			r.queue_free()
 			rockets.remove_at(i)
 
@@ -156,10 +153,11 @@ func _process(delta: float) -> void:
 
 	if runner_moving:
 		runner.position.x += runner_speed * delta * runner_dir
-		var reached := (runner_dir > 0.0 and runner.position.x >= screen_middle.x) \
-			or (runner_dir < 0.0 and runner.position.x <= screen_middle.x)
-		if reached and not runner_hit:
-			_burn_tree()
+		# Damage now fires via Runner/Hurtbox overlapping Tree/Hitbox
+		# (_on_tree_hitbox_entered). Just clean up if it somehow runs past.
+		if runner.position.x < -200 or runner.position.x > get_viewport_rect().size.x + 200:
+			runner_moving = false
+			runner.visible = false
 
 func drop_bomb() -> void:
 	bomb_dropped = true
@@ -201,9 +199,45 @@ func fire_rocket() -> void:
 	var r: Sprite2D = rocket.duplicate()
 	r.visible = true
 	r.position = jet.position
+	# Area2D hitbox so the rocket hits the bomber via collision, not position.
+	var hb := Area2D.new()
+	var cs := CollisionShape2D.new()
+	var sh := RectangleShape2D.new()
+	sh.size = Vector2(10, 6)
+	cs.shape = sh
+	hb.add_child(cs)
+	r.add_child(hb)
+	hb.area_entered.connect(_on_rocket_area.bind(r))
 	add_child(r)
 	rockets.append({ "node": r, "dmg": dmg, "dir": plane_dir })
 	print("[GAME] Rocket fired. vol %d%% -> dmg x%.2f = %.2f" % [int(vol_peak * 100.0), mult, dmg])
+
+
+# Rocket's hitbox overlapped something. Only the bomber's hurtbox counts.
+func _on_rocket_area(area: Area2D, rnode: Sprite2D) -> void:
+	if area != plane_hurtbox or not plane_moving:
+		return
+	for i in range(rockets.size()):
+		if rockets[i]["node"] == rnode:
+			hit_bomber(rockets[i]["dmg"])
+			rnode.queue_free()
+			rockets.remove_at(i)
+			return
+
+
+# Wrap the plane's bare CollisionShape2D in an Area2D so rockets can hit it.
+# Idempotent: reuse an existing Plane/Hurtbox if the scene already has one.
+func _setup_plane_hurtbox() -> void:
+	plane_hurtbox = plane.get_node_or_null("Hurtbox")
+	if plane_hurtbox != null:
+		return
+	plane_hurtbox = Area2D.new()
+	plane_hurtbox.name = "Hurtbox"
+	var old_cs := plane.get_node_or_null("CollisionShape2D")
+	if old_cs != null:
+		plane.remove_child(old_cs)
+		plane_hurtbox.add_child(old_cs)
+	plane.add_child(plane_hurtbox)
 
 
 # Reverse an active tornado so it blows back off-screen without hitting the tree.
@@ -293,6 +327,8 @@ func _on_tree_hitbox_entered(area: Area2D) -> void:
 	elif src == tornado and tornado_moving and not tornado_hit:
 		tornado_hit = true
 		damage_tree(tornado_damage)
+	elif src == runner and runner_moving and not runner_hit:
+		_burn_tree()
 
 func _on_timer_timeout() -> void:
 	var roll := randf()
@@ -331,6 +367,7 @@ func _burn_tree() -> void:
 	damage_tree(runner_damage)
 	# Frame 3 = blowing up, held (no loop).
 	runner.play("boom")
+
 	var tw := create_tween()
 	for n in 10:
 		tw.tween_property(runner, "modulate", Color.RED, 0.06)

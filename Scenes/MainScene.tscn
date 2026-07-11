@@ -8,10 +8,14 @@
 [ext_resource type="Texture2D" uid="uid://dscx2swks7car" path="res://Assets/TORNAD0_FRAME_3.png" id="4_f140w"]
 [ext_resource type="Texture2D" uid="uid://xywu5ygmgd73" path="res://Assets/Fighter Jet.png" id="5_4b75m"]
 [ext_resource type="Texture2D" uid="uid://dr8dstoxxcijp" path="res://Assets/BOMB.png" id="6_0iob3"]
-[ext_resource type="Texture2D" uid="uid://6lrhb2eafj8v" path="res://Assets/Tree-Normal.png" id="7_tree"]
+[ext_resource type="Texture2D" uid="uid://cujpx3o5h5l1d" path="res://Assets/NewTreeFinal.png" id="7_xb4mg"]
 [ext_resource type="Texture2D" uid="uid://bae6niuyto0c5" path="res://Assets/Foreground.png" id="10_8ju71"]
 [ext_resource type="Texture2D" uid="uid://hnttj5eyycpc" path="res://Assets/Male-Character-Spritesheet_EVIL.png" id="11_evil"]
+[ext_resource type="Texture2D" uid="uid://cqn8qvxq88y8c" path="res://Assets/boom/frame_00_delay-0.1s.png" id="12_4sso6"]
 [ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://Scenes/Character.tscn" id="12_xb4mg"]
+[ext_resource type="Texture2D" uid="uid://c1bfof5c5kyt" path="res://Assets/boom/frame_12_delay-0.1s.png" id="24_sl126"]
+[ext_resource type="Texture2D" uid="uid://bbhb8hl76f7vx" path="res://Assets/boom/frame_13_delay-0.1s.png" id="25_ergw4"]
+[ext_resource type="Texture2D" uid="uid://dswii0nva3y2o" path="res://Assets/boom/frame_14_delay-0.1s.png" id="26_75tun"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u0f01"]
 radius = 212.39078
@@ -101,10 +105,19 @@ animations = [{
 "texture": SubResource("evil_2")
 }, {
 "duration": 1.0,
-"texture": SubResource("evil_0")
+"texture": SubResource("evil_2")
 }, {
 "duration": 1.0,
-"texture": SubResource("evil_7")
+"texture": ExtResource("12_4sso6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_sl126")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_ergw4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_75tun")
 }],
 "loop": 0,
 "name": &"boom",
@@ -184,15 +197,15 @@ scale = Vector2(6, 4)
 texture = ExtResource("10_8ju71")
 
 [node name="Tree" type="Sprite2D" parent="." unique_id=1451402139]
-position = Vector2(614, 332.00003)
-scale = Vector2(2.5, 2.5)
-texture = ExtResource("7_tree")
+position = Vector2(614, 355)
+scale = Vector2(4, 4)
+texture = ExtResource("7_xb4mg")
 
 [node name="Hitbox" type="Area2D" parent="Tree" unique_id=1203150290]
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Tree/Hitbox" unique_id=1917960600]
-position = Vector2(-8.400001, -35.200012)
-polygon = PackedVector2Array(18.40001, -4.7999954, 18.800003, -4.7999954, 34, -3.199997, 50, 4.4000015, 68, 22, 69.600006, 32.399994, 44.399994, 41.600006, 32, 62.800003, 38.799988, 99.59999, 52.399994, 110, 17.199997, 114.399994, -25.199997, 117.2, -3.199997, 91.59999, 4.400009, 62, -27.199997, 40.399994, -38.799988, 41.199997, -41.59999, 13.600006, -16.399994, 2, 5.600006, -4.399994)
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Tree/Hitbox" unique_id=1802687642]
+position = Vector2(-2.25, 0.75)
+polygon = PackedVector2Array(-17, 54.999992, 19, 55.33332, 9.333328, 31.666664, 27.333328, 15.999992, 26.333328, -20.66668, 5, -56.00001, -13.666672, -40.333344, -22.666672, -6.0000076, -22.666672, 12.333321, -8.666672, 22.999992)
 
 [node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
 position = Vector2(-202.99994, 287)
@@ -208,7 +221,7 @@ polygon = PackedVector2Array(-10.250008, -12, 7.3749924, -14, 10.999992, -11, 3.
 position = Vector2(-114.99999, 513.99994)
 scale = Vector2(3.5, 3.5)
 sprite_frames = SubResource("SpriteFrames_runner")
-animation = &"run_left"
+animation = &"boom"
 
 [node name="Hurtbox" type="Area2D" parent="Runner" unique_id=1560676076]
 scale = Vector2(0.99999994, 0.99999994)
@@ -222,5 +235,6 @@ wait_time = 5.0
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=104994087]
 
 [node name="Character" parent="." unique_id=1738440849 instance=ExtResource("12_xb4mg")]
+position = Vector2(-97, -101)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
