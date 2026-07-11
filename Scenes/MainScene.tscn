@@ -29,7 +29,7 @@ script = ExtResource("1_rpqi1")
 
 [node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
 position = Vector2(-203, 287)
-scale = Vector2(0.17956349, 0.9661134)
+scale = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_ilkqt")
 
 [node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
