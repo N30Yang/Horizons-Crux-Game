@@ -1,7 +1,0 @@
-res://Scenes/MainScene.tscn
-res://Scenes/BookScene.tscn
-res://Scripts/book_scene.gd
-res://Scripts/World.gd
-res://Voice/VoiceInputManager.gd
-res://Scripts/book_scene.gd
-res://Scripts/fade.gd

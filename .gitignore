@@ -1,0 +1,20 @@
+# Godot 4+ per-machine cache — must not be shared across machines.
+.godot/
+
+# Godot export artifacts (web build output). Rebuild via Project > Export.
+New Game Project.html
+New Game Project.js
+New Game Project.wasm
+New Game Project.pck
+New Game Project.png
+New Game Project.png.import
+New Game Project.icon.png
+New Game Project.icon.png.import
+New Game Project.apple-touch-icon.png
+New Game Project.apple-touch-icon.png.import
+New Game Project.audio.worklet.js
+New Game Project.audio.position.worklet.js
+
+# OS junk
+.DS_Store
+Thumbs.db
