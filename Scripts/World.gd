@@ -27,7 +27,11 @@ extends Node2D
 @export var bomb_damage: int = 2
 @export var tornado_damage: int = 1
 @export var bomber_max_health: int = 3
-@export var rocket_damage: int = 1
+@export var rocket_damage: float = 1.0
+
+# Volume -> damage multiplier. Louder = more damage.
+@export var vol_damage_min: float = 0.4  # quiet / silence
+@export var vol_damage_max: float = 1.2  # max volume
 
 const TREE_STAGES := [
 	preload("res://Assets/Tree_DEAD.png"),
@@ -44,8 +48,8 @@ var tornado_hit: bool = false
 var plane_moving: bool = false
 var bomb_dropped: bool = false
 var bomb_dropping: bool = false
-var rocket_flying: bool = false
-var bomber_health: int = 0
+var rockets: Array = []  # each: { "node": Sprite2D, "dmg": float }
+var bomber_health: float = 0.0
 var screen_middle: Vector2
 var plane_start_x: float
 var tornado_start_x: float
@@ -113,13 +117,16 @@ func _process(delta: float) -> void:
 			plane.visible = false
 			jet.visible = false
 
-	if rocket_flying:
-		rocket.position.x -= rocket_speed * delta
-		if rocket.position.x <= plane.position.x:
-			hit_bomber()
-		elif rocket.position.x < -100:
-			rocket_flying = false
-			rocket.visible = false
+	for i in range(rockets.size() - 1, -1, -1):
+		var r: Sprite2D = rockets[i]["node"]
+		r.position.x -= rocket_speed * delta
+		if plane_moving and plane.visible and r.position.x <= plane.position.x:
+			hit_bomber(rockets[i]["dmg"])
+			r.queue_free()
+			rockets.remove_at(i)
+		elif r.position.x < -100:
+			r.queue_free()
+			rockets.remove_at(i)
 
 	if bomb_dropping:
 		bomb.position.y += bomb_speed * delta
@@ -156,30 +163,33 @@ func _on_voice_power(power_key: String) -> void:
 	match power_key:
 		"W":
 			fire_rocket()
-		"E":
-			pass
-		"Q":
-			pass
-		"R":
-			pass
 
 
+# No cooldown: every call spawns a new rocket. Rapid, clear speech = rapid fire.
 func fire_rocket() -> void:
-	if not plane_moving or rocket_flying:
+	if not plane_moving:
 		return
-	rocket.position = jet.position
-	rocket.visible = true
-	rocket_flying = true
+	var mult := lerpf(vol_damage_min, vol_damage_max, clampf(vol_peak, 0.0, 1.0))
+	var dmg := rocket_damage * mult
+	var r: Sprite2D = rocket.duplicate()
+	r.visible = true
+	r.position = jet.position
+	add_child(r)
+	rockets.append({ "node": r, "dmg": dmg })
+	print("[GAME] Rocket fired. vol %d%% -> dmg x%.2f = %.2f" % [int(vol_peak * 100.0), mult, dmg])
 
-func hit_bomber() -> void:
-	rocket_flying = false
-	rocket.visible = false
-	bomber_health -= rocket_damage
+func hit_bomber(dmg: float) -> void:
+	bomber_health -= dmg
 	hit_stop()
 	if bomber_health <= 0:
 		shoot_down_bomber()
 	else:
-		print("[GAME] Bomber hit! health: %d" % bomber_health)
+		print("[GAME] Bomber hit! health: %.1f" % bomber_health)
+
+func _clear_rockets() -> void:
+	for entry in rockets:
+		entry["node"].queue_free()
+	rockets.clear()
 
 func shoot_down_bomber() -> void:
 	plane_moving = false
@@ -187,6 +197,7 @@ func shoot_down_bomber() -> void:
 	jet.visible = false
 	bomb_dropping = false
 	bomb.visible = false
+	_clear_rockets()
 	print("[GAME] Bomber shot down!")
 
 func damage_tree(amount: int = 1) -> void:
