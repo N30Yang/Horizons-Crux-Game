@@ -29,3 +29,9 @@ layout_mode = 2
 
 [node name="Brownie" parent="HBoxContainer" unique_id=832205566 instance=ExtResource("3_wpy67")]
 layout_mode = 2
+
+[connection signal="pressed" from="HBoxContainer/Blondie/TextureButton" to="." method="_on_texture_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/Brownie/TextureButton2" to="." method="_on_texture_button_2_pressed"]
+
+[editable path="HBoxContainer/Blondie"]
+[editable path="HBoxContainer/Brownie"]
