@@ -1,20 +1,40 @@
 [gd_scene format=3 uid="uid://cqnquf31llhij"]
 
-[ext_resource type="Script" uid="uid://b67vyktqabcoi" path="res://Scripts/book_scene.gd" id="1_giks7"]
+[ext_resource type="Script" uid="uid://dp6sm1x6xf3hw" path="res://Scenes/book_end_scene.gd" id="1_8jmsm"]
 [ext_resource type="Texture2D" uid="uid://1u2qwy53ik2l" path="res://Assets/Book.png" id="2_02u5x"]
-[ext_resource type="PackedScene" uid="uid://b8rlhgdhqmu3u" path="res://Scenes/fade.tscn" id="3_5kvlx"]
+[ext_resource type="Script" uid="uid://8i71gb37aacl" path="res://Scenes/camera_2d.gd" id="3_giks7"]
 
 [node name="Node2D" type="Node2D" unique_id=444095358]
-script = ExtResource("1_giks7")
+script = ExtResource("1_8jmsm")
 
 [node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
-position = Vector2(580.00006, 329)
+position = Vector2(635.99994, 312)
 scale = Vector2(10, 10)
 texture = ExtResource("2_02u5x")
 
-[node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_5kvlx")]
-unique_name_in_owner = true
-
 [node name="Timer" type="Timer" parent="." unique_id=428846735]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=630829874]
+unique_name_in_owner = true
+position = Vector2(606, 294)
+script = ExtResource("3_giks7")
+
+[node name="Control" type="Control" parent="." unique_id=803834189]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 437.0
+offset_top = 161.0
+offset_right = 588.0
+offset_bottom = 400.0
+
+[node name="HSplitContainer" type="HSplitContainer" parent="Control" unique_id=2126547252]
+layout_mode = 0
+offset_left = -203.0
+offset_top = -6.0
+offset_right = -163.0
+offset_bottom = 34.0
+
+[node name="Label" type="Label" parent="Control/HSplitContainer" unique_id=752733655]
+layout_mode = 2
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

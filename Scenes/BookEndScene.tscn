@@ -2,23 +2,56 @@
 
 [ext_resource type="Script" uid="uid://dp6sm1x6xf3hw" path="res://Scenes/book_end_scene.gd" id="1_7xbt5"]
 [ext_resource type="Texture2D" uid="uid://1u2qwy53ik2l" path="res://Assets/Book.png" id="2_7xbt5"]
-[ext_resource type="PackedScene" uid="uid://b8rlhgdhqmu3u" path="res://Scenes/fade.tscn" id="3_7cs3i"]
 [ext_resource type="Script" uid="uid://8i71gb37aacl" path="res://Scenes/camera_2d.gd" id="4_7cs3i"]
 
 [node name="Node2D" type="Node2D" unique_id=444095358]
 script = ExtResource("1_7xbt5")
 
 [node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
-position = Vector2(580.00006, 329)
+position = Vector2(632, 301.00003)
 scale = Vector2(10, 10)
 texture = ExtResource("2_7xbt5")
-
-[node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_7cs3i")]
-unique_name_in_owner = true
 
 [node name="Timer" type="Timer" parent="." unique_id=428846735]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=273602736]
+unique_name_in_owner = true
+position = Vector2(601, 294)
 script = ExtResource("4_7cs3i")
+
+[node name="Control" type="Control" parent="." unique_id=1993726226]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 513.0
+offset_top = 52.0
+offset_right = 513.0
+offset_bottom = 430.0
+size_flags_horizontal = 4
+size_flags_vertical = 0
+
+[node name="HSplitContainer" type="HSplitContainer" parent="Control" unique_id=1191897059]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -121.0
+offset_top = -201.5
+offset_right = 121.0
+offset_bottom = 201.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+
+[node name="Label" type="Label" parent="Control/HSplitContainer" unique_id=8065901]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "The book is warm because it was never paper.
+You held it, and did not know. You read it, and did not listen. The world asked once to be left, and you did not.
+It grew for so long, and now it is only this — pages. 
+Turn back. Try again. Don’t make the same mistakes. "
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

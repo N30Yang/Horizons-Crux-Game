@@ -8,13 +8,46 @@
 script = ExtResource("1_p78a5")
 
 [node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
-position = Vector2(580.00006, 329)
-scale = Vector2(10, 10)
+position = Vector2(601.5, 306.50003)
+scale = Vector2(10.671873, 10.703125)
 texture = ExtResource("1_51cc1")
 
 [node name="Fade" parent="." unique_id=839969456 instance=ExtResource("3_lej1j")]
 unique_name_in_owner = true
+visible = false
 
 [node name="Timer" type="Timer" parent="." unique_id=428846735]
+wait_time = 30.0
+
+[node name="Control" type="Control" parent="." unique_id=927607452]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 26.0
+offset_top = -35.0
+offset_right = 1103.0
+offset_bottom = 643.0
+size_flags_horizontal = 4
+
+[node name="Label" type="Label" parent="Control" unique_id=978904989]
+layout_mode = 0
+offset_left = 326.0
+offset_top = 119.0
+offset_right = 832.0
+offset_bottom = 662.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 14
+text = "INTRO
+The world didn't die all at once. The furnaces went first, then the water, then the sky stopped doing whatever skies are supposed to do. Everyone knows that part.
+What they don't tell you is that one thing kept growing anyway. No reason for it. Roots too deep for the mines to reach, standing where nothing else stood. It didn't ask for anything. It just kept being alive, which by then was strange enough to count as a miracle.
+You weren't picked for this. You were just close by. Sometimes that's the same thing.
+Four gifts, and none of them are free:
+Shapeshift — because everything else forgot how to change on purpose.
+ Flight — because the ground can't be trusted anymore.
+ 4th Wall — because you're not as alone in this as you think.
+ Consequences — the others didn't come with a price. This one does.
+Hold onto this book. It's heavier than it looks, and warmer than paper has any business being. Don't think too hard about why.
+Don't let this be the end of it."
+horizontal_alignment = 1
+autowrap_mode = 2
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
