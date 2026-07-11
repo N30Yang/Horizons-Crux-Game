@@ -1,10 +1,4 @@
-<p align="center">
-<img width="164" height="170" alt="Tree-Normal" src="https://github.com/user-attachments/assets/695265f7-ef27-4bdc-9cbf-c651c490d88c" />
-</p>
-
-<img width="2087" height="1096" alt="logo" src="https://github.com/user-attachments/assets/576fadd0-be57-4492-b6e6-b5dd9a468ff2" />
-
-
+<img width="2088" height="1274" alt="logoNEW" src="https://github.com/user-attachments/assets/973a6931-7887-44f5-9e91-53acfdc72e7d" />
 # The Last One
 The World is industrial and dying, no green left anywhere. Somehow one tree survived. You and other players get powers from god — no explanation — to protect it. Enemies come for it. You defend it together.
 
