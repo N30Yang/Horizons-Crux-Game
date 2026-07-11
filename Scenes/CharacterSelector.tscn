@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://bsd66iduvtthp"]
 
 [ext_resource type="Script" uid="uid://644agwul1uvb" path="res://Scripts/character_selector.gd" id="1_eod3x"]
+[ext_resource type="PackedScene" uid="uid://dtcc6ue4vkrb3" path="res://Scenes/blondie.tscn" id="2_autqr"]
+[ext_resource type="PackedScene" uid="uid://bgyw1odvplrc" path="res://Scenes/brownie.tscn" id="3_wpy67"]
 
 [node name="Control" type="Control" unique_id=1319880984]
 layout_mode = 3
@@ -11,9 +13,19 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_eod3x")
 
-[node name="TextureButton" type="TextureButton" parent="." unique_id=678575039]
+[node name="ColorRect" type="ColorRect" parent="." unique_id=58004494]
 layout_mode = 0
-offset_right = 265.0
-offset_bottom = 167.0
+offset_right = 1151.0
+offset_bottom = 651.0
+color = Color(0.94509804, 0.7607843, 0.49019608, 1)
 
-[connection signal="pressed" from="TextureButton" to="." method="_on_texture_button_pressed"]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1823254803]
+layout_mode = 0
+offset_right = 192.0
+offset_bottom = 96.0
+
+[node name="Blondie" parent="HBoxContainer" unique_id=1337620141 instance=ExtResource("2_autqr")]
+layout_mode = 2
+
+[node name="Brownie" parent="HBoxContainer" unique_id=832205566 instance=ExtResource("3_wpy67")]
+layout_mode = 2
