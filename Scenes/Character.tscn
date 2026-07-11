@@ -80,15 +80,14 @@ animations = [{
 script = ExtResource("1_677pu")
 
 [node name="BlondeCharacter" type="AnimatedSprite2D" parent="." unique_id=1119891028]
-visible = false
-position = Vector2(41, 573)
-scale = Vector2(2, 2)
+position = Vector2(49, 532)
+scale = Vector2(2.4, 2.4)
 sprite_frames = SubResource("SpriteFrames_0j3ql")
 frame = 1
 frame_progress = 0.5972453
 
 [node name="BrownieCharacter" type="AnimatedSprite2D" parent="." unique_id=1166546917]
 visible = false
-position = Vector2(94, 578)
-scale = Vector2(2, 2)
+position = Vector2(115, 530)
+scale = Vector2(2.4, 2.4)
 sprite_frames = SubResource("SpriteFrames_ilkqt")

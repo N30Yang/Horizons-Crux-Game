@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://6lrhb2eafj8v" path="res://Assets/Tree-Normal.png" id="7_tree"]
 [ext_resource type="Texture2D" uid="uid://bae6niuyto0c5" path="res://Assets/Foreground.png" id="10_8ju71"]
 [ext_resource type="Texture2D" uid="uid://hnttj5eyycpc" path="res://Assets/Male-Character-Spritesheet_EVIL.png" id="11_evil"]
+[ext_resource type="PackedScene" uid="uid://oea2uyph2jxn" path="res://Scenes/Character.tscn" id="12_xb4mg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u0f01"]
 radius = 212.39078
@@ -219,5 +220,7 @@ polygon = PackedVector2Array(-3.7142868, -17.142838, -4, -7.9999847, -2.5714302,
 wait_time = 5.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=104994087]
+
+[node name="Character" parent="." unique_id=1738440849 instance=ExtResource("12_xb4mg")]
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
