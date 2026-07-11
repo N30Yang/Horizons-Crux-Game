@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cjgjsf1mlm21e"]
 
 [ext_resource type="Script" uid="uid://d0nhl0c06ortq" path="res://Scripts/World.gd" id="1_rpqi1"]
+[ext_resource type="Texture2D" uid="uid://crvw5h21tuwq5" path="res://Assets/Background.png" id="2_4b75m"]
 [ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="2_rpqi1"]
 [ext_resource type="Texture2D" uid="uid://b8lc2osnispm1" path="res://Assets/TORNAD0_FRAME_1.png" id="2_y4jh7"]
 [ext_resource type="Texture2D" uid="uid://bhr1i214ahndi" path="res://Assets/TORNAD0_FRAME_2.png" id="3_q68mp"]
@@ -8,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://dr8dstoxxcijp" path="res://Assets/BOMB.png" id="6_0iob3"]
 [ext_resource type="Texture2D" uid="uid://dvxmrf1x2qcld" path="res://New Game Project.icon.png" id="7_f140w"]
 [ext_resource type="Texture2D" uid="uid://6lrhb2eafj8v" path="res://Assets/Tree-Normal.png" id="7_tree"]
+[ext_resource type="Texture2D" uid="uid://bae6niuyto0c5" path="res://Assets/Foreground.png" id="10_8ju71"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
 animations = [{
@@ -40,10 +42,10 @@ height = 74.379944
 [node name="Node2D2" type="Node2D" unique_id=1743793518]
 script = ExtResource("1_rpqi1")
 
-[node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
-position = Vector2(-203, 287)
-scale = Vector2(8, 8)
-sprite_frames = SubResource("SpriteFrames_ilkqt")
+[node name="Background" type="Sprite2D" parent="." unique_id=1091137809]
+position = Vector2(604, 294)
+scale = Vector2(4, 4)
+texture = ExtResource("2_4b75m")
 
 [node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
 position = Vector2(1364, 37)
@@ -72,20 +74,20 @@ visible = false
 position = Vector2(1500, 33)
 texture = ExtResource("6_0iob3")
 
+[node name="Foreground" type="Sprite2D" parent="." unique_id=777654682]
+position = Vector2(579, 443)
+scale = Vector2(6, 4)
+texture = ExtResource("10_8ju71")
+
 [node name="Tree" type="Sprite2D" parent="." unique_id=1451402139]
-position = Vector2(576, 324)
+position = Vector2(614, 332.00003)
 scale = Vector2(2.5, 2.5)
 texture = ExtResource("7_tree")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Tree" unique_id=1776806552]
-position = Vector2(3.2, -9.2)
-rotation = -1.5881516
-shape = SubResource("CapsuleShape2D_u0f01")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="Tree" unique_id=97777073]
-position = Vector2(9.999998, 44)
-rotation = -0.052323785
-shape = SubResource("CapsuleShape2D_xwtgb")
+[node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
+position = Vector2(-202.99994, 287)
+scale = Vector2(7.9999995, 7.9999995)
+sprite_frames = SubResource("SpriteFrames_ilkqt")
 
 [node name="Timer" type="Timer" parent="." unique_id=1942069986]
 wait_time = 5.0

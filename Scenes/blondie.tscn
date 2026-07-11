@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://dtcc6ue4vkrb3"]
+
+[ext_resource type="Script" uid="uid://bbikt5wk0i364" path="res://Scenes/blondie.gd" id="1_g22f7"]
+[ext_resource type="Texture2D" uid="uid://bp1ctmkxjvero" path="res://Assets/Male-Blonde-Character-Spritesheet.png" id="1_ivpx8"]
+
+[node name="Blondie" type="Panel" unique_id=1337620141]
+script = ExtResource("1_g22f7")
+
+[node name="TextureButton" type="TextureButton" parent="." unique_id=2113631757]
+layout_mode = 0
+offset_left = 274.0
+offset_top = 187.0
+offset_right = 466.0
+offset_bottom = 445.0
+texture_normal = ExtResource("1_ivpx8")
+stretch_mode = 0

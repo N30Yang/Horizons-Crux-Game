@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bgyw1odvplrc"]
+
+[ext_resource type="Texture2D" uid="uid://dqoehify6nbmc" path="res://Assets/Male-Character-Spritesheet.png" id="1_4gjdi"]
+
+[node name="Brownie" type="Panel" unique_id=832205566]
+
+[node name="TextureButton2" type="TextureButton" parent="." unique_id=1285723961]
+layout_mode = 0
+offset_left = 568.0
+offset_top = 201.0
+offset_right = 760.0
+offset_bottom = 438.0
+texture_normal = ExtResource("1_4gjdi")
+stretch_mode = 0
