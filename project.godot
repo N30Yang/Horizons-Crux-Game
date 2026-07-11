@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="New Game Project"
-run/main_scene="uid://bpbmt4py0ec22"
+run/main_scene="uid://cjgjsf1mlm21e"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://New Game Project.icon.png"
 
@@ -29,7 +29,6 @@ VoiceInput="*uid://i2nhjsprpjcr"
 window/size/viewport_width=1208
 window/size/viewport_height=588
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [input]
 
@@ -65,8 +64,7 @@ consequence={
 
 [rendering]
 
-renderer/rendering_method="forward_plus"
-renderer/rendering_method.web="gl_compatibility"
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.62385786, 0.44480065, 0.24461392, 1)
