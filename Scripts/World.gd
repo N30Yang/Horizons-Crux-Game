@@ -14,14 +14,10 @@ func _ready() -> void:
 	tornado.play()
 
 func _process(delta: float) -> void:
-<<<<<<< Updated upstream
+
 	if should_move:
 		tornado.position.x += tornado_speed * delta
-=======
 
-		tornado.position += tornado_direction * tornado_speed * delta
-	
->>>>>>> Stashed changes
 
 
 #this makes the voice connect to the actual game 
@@ -35,9 +31,7 @@ func _on_voice_power(power_key: String) -> void:
 
 
 func _on_timer_timeout() -> void:
-<<<<<<< Updated upstream
+
 	should_move = true
-=======
 	
 	pass # Replace with function body.
->>>>>>> Stashed changes

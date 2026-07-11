@@ -1,10 +1,10 @@
-[gd_scene format=3 uid="uid://bsxpfog03r6ya"]
+[gd_scene format=3 uid="uid://bpbmt4py0ec22"]
 
-[ext_resource type="Script" uid="uid://b6avpqngxc0bg" path="res://menu.gd" id="1_dolsu"]
-[ext_resource type="Texture2D" path="res://logo.png" id="2_5yleq"]
-[ext_resource type="Texture2D" path="res://Asset 6.png" id="3_dolsu"]
-[ext_resource type="Texture2D" path="res://Asset 7.png" id="4_n4eug"]
-[ext_resource type="Texture2D" path="res://Asset 8.png" id="5_dlksc"]
+[ext_resource type="Script" uid="uid://b6avpqngxc0bg" path="res://Scripts/menu.gd" id="1_ma218"]
+[ext_resource type="Texture2D" uid="uid://ycsp2c0bgwbw" path="res://Branding/logo.png" id="2_idohh"]
+[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="3_wfhf6"]
+[ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="4_3jcrr"]
+[ext_resource type="Texture2D" uid="uid://ctwuigy0e1lw8" path="res://UI/Asset 8.png" id="5_aobxe"]
 
 [node name="StartMenu" type="Control" unique_id=1125722841]
 layout_mode = 3
@@ -13,7 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_dolsu")
+script = ExtResource("1_ma218")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1826597614]
 layout_mode = 1
@@ -31,7 +31,7 @@ anchor_right = 1.0
 offset_top = -180.0
 offset_bottom = 424.97937
 grow_horizontal = 2
-texture = ExtResource("2_5yleq")
+texture = ExtResource("2_idohh")
 expand_mode = 5
 
 [node name="StartButton" type="TextureButton" parent="." unique_id=1220043898]
@@ -44,7 +44,7 @@ offset_top = -530.0
 offset_right = 796.0
 offset_bottom = -261.0
 grow_vertical = 0
-texture_normal = ExtResource("3_dolsu")
+texture_normal = ExtResource("3_wfhf6")
 ignore_texture_size = true
 stretch_mode = 4
 
@@ -54,7 +54,7 @@ offset_left = 163.0
 offset_top = 287.0
 offset_right = 465.0
 offset_bottom = 510.0
-texture_normal = ExtResource("4_n4eug")
+texture_normal = ExtResource("4_3jcrr")
 ignore_texture_size = true
 stretch_mode = 4
 
@@ -64,7 +64,7 @@ offset_left = 705.0
 offset_top = 286.0
 offset_right = 1061.0
 offset_bottom = 517.0
-texture_normal = ExtResource("5_dlksc")
+texture_normal = ExtResource("5_aobxe")
 ignore_texture_size = true
 stretch_mode = 4
 
