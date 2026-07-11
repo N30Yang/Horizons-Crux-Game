@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bfkpox1rq01h3"
-path="res://.godot/imported/logoNEW.png-93a446085946ce3e93b590a8ab4c72c9.ctex"
+uid="uid://dscx2swks7car"
+path="res://.godot/imported/TORNAD0_FRAME_3.png-dd9678a67dbe53e7f9fb5dbaa397d6aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://logoNEW.png"
-dest_files=["res://.godot/imported/logoNEW.png-93a446085946ce3e93b590a8ab4c72c9.ctex"]
+source_file="res://Assets/TORNAD0_FRAME_3.png"
+dest_files=["res://.godot/imported/TORNAD0_FRAME_3.png-dd9678a67dbe53e7f9fb5dbaa397d6aa.ctex"]
 
 [params]
 

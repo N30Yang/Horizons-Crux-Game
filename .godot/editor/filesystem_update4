@@ -1,3 +1,5 @@
 res://Scripts/World.gd
 res://Scenes/MainScene.tscn
 res://Voice/VoiceInputManager.gd
+res://Scripts/book_scene.gd
+res://Scripts/fade.gd
