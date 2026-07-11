@@ -1,3 +1,37 @@
 [gd_scene format=3 uid="uid://c45ud55o4dasl"]
 
-[node name="Node2D" type="Node2D" unique_id=1650456080]
+[ext_resource type="Script" uid="uid://d0nhl0c06ortq" path="res://Scripts/World.gd" id="1_lej1j"]
+[ext_resource type="Texture2D" uid="uid://feurxenmslyo" path="res://UI/Asset 6.png" id="3_7ksh1"]
+[ext_resource type="Texture2D" uid="uid://brq1rynn6lx0b" path="res://UI/Asset 7.png" id="4_q4ag0"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_7ksh1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_q4ag0")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Node2D" type="Node2D" unique_id=1743793518]
+script = ExtResource("1_lej1j")
+
+[node name="Tornado" type="AnimatedSprite2D" parent="." unique_id=821751397]
+position = Vector2(-203, 287)
+scale = Vector2(0.17956349, 0.9661134)
+sprite_frames = SubResource("SpriteFrames_ilkqt")
+
+[node name="Plane" type="Sprite2D" parent="." unique_id=1451402137]
+position = Vector2(1365, 33)
+scale = Vector2(0.35813493, 0.4571231)
+texture = ExtResource("3_7ksh1")
+
+[node name="Timer" type="Timer" parent="." unique_id=1942069986]
+wait_time = 5.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

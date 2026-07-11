@@ -12,7 +12,7 @@ Q — 4th Wall: wall, break, glitch, reality <br>
 R — Consequences: storm, passes, freeze, time, clear, plummet, fall
 
 ## How To Play
-To play the game, go to the link here. The game was made in Godot by three, young, developers.
+To play the game, go to the link here. The game was made in Godot by three young and incredi, developers.
 
 
 ## Who did what?
