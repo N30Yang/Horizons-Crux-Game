@@ -58,6 +58,7 @@ var sil_hide: Array[CanvasItem] = []
 
 var mic_player: AudioStreamPlayer
 var mic_bus_idx: int = -1
+var voice_unlocked: bool = false
 var vol_fill: ColorRect
 var vol_peak: float = 0.0
 
@@ -69,8 +70,10 @@ var bomber_hp_bg: ColorRect
 var bomber_hp_fill: ColorRect
 
 func _ready() -> void:
+	Engine.time_scale = 1.0
 	VoiceInput.power_triggered.connect(_on_voice_power)
 	VoiceInput.recognition_failed.connect(_on_voice_mishap)
+	VoiceInput.listening_stopped.connect(_restart_listen)
 	tree_hitbox.area_entered.connect(_on_tree_hitbox_entered)
 	screen_middle = get_viewport_rect().size / 2
 	plane_start_x = plane.position.x
@@ -134,17 +137,25 @@ func drop_bomb() -> void:
 	bomb_dropping = true
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_SPACE:
-			VoiceInput.start_listening()
-			print("[GAME] Voice listening started. Speak now!")
-		elif event.keycode == KEY_F:
-			fire_rocket()
+	var key_press: bool = event is InputEventKey and event.pressed
+	var mouse_press: bool = event is InputEventMouseButton and event.pressed
+	if (key_press or mouse_press) and not voice_unlocked:
+		voice_unlocked = true
+		VoiceInput.start_listening()
+		print("[GAME] Voice unlocked - always listening now.")
+	if key_press and event.keycode == KEY_W:
+		fire_rocket()
+
+func _restart_listen() -> void:
+	if not voice_unlocked:
+		return
+	await get_tree().create_timer(0.2).timeout
+	VoiceInput.start_listening()
 
 func _on_voice_power(power_key: String) -> void:
 	match power_key:
 		"W":
-			pass
+			fire_rocket()
 		"E":
 			pass
 		"Q":
@@ -375,6 +386,5 @@ func _update_volume_meter(delta: float) -> void:
 
 
 func _on_voice_mishap(reason: String) -> void:
-	var is_mishap := reason == "no_match" or reason == "timeout"
-	if is_mishap:
+	if reason == "no_match":
 		print("[GAME] voice mishap detected: %s" % reason)
