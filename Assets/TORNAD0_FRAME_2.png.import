@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3qg5qpy2pfno"
+<<<<<<< Updated upstream
+uid="uid://bhr1i214ahndi"
+=======
+uid="uid://4b8kh5f0lbji"
+>>>>>>> Stashed changes
 path="res://.godot/imported/TORNAD0_FRAME_2.png-08943a4e7a0bf674525000faab112b59.ctex"
 metadata={
 "vram_texture": false
