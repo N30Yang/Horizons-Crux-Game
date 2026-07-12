@@ -6,12 +6,14 @@ The World is industrial and dying, no green left anywhere. Somehow one tree surv
 The fun thing about this game, is you use your voice to play! There are trigger words that are picked up by our system that trigger different events.
 The words are: <br>
 
-W — Shapeshift: shapeshift, dragon, transform, morph <br>
+W — Shapeshift: = shapeshift/morph <br>
 E — Flight: flight, fly, ascend, rise, up <br>
-Q — 4th Wall: wall, break, glitch, reality <br>
+Q — 4th Wall: kill <br>
+Right left and up to move with player
+Shoot = Shoot 
 
 ## How To Play
-To play the game, go to the link here. The game was made in Godot by three young and incredi, developers.
+To play the game, go to the link here. The game was made in Godot by three young and incredible, developers.
 
 
 ## Who did what?
