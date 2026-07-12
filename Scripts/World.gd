@@ -109,6 +109,8 @@ const BOOM_SFX := [
 ]
 @export var sfx_volume_db: float = 0.0
 var sfx_player: AudioStreamPlayer
+var _boom_streams: Array = []   # preloaded + de-looped once
+var _boom_last_ms: int = 0      # debounce so one event can't double-fire
 
 const HP_BAR_WIDTH := 360.0
 var hp_fill: ColorRect         # hp bar vars 
@@ -876,14 +878,28 @@ func _setup_music() -> void:
 	sfx_player.bus = "Master"
 	add_child(sfx_player)
 
-# Play a random boom SFX (runner explosion).
+	# Preload booms once and force loop OFF (Godot's mp3 importer defaults loop
+	# ON, which makes a short boom repeat forever until the next one replaces it).
+	_boom_streams.clear()
+	for path in BOOM_SFX:
+		var s = load(path)
+		if s == null:
+			push_warning("[SFX] Could not load %s" % path)
+			continue
+		if "loop" in s:
+			s.loop = false
+		_boom_streams.append(s)
+
+# Play a random boom SFX (runner/bomb explosion). Debounced so a single event
+# can't fire twice in the same instant.
 func _play_boom() -> void:
-	var stream = load(BOOM_SFX[randi() % BOOM_SFX.size()])
-	if stream == null:
+	if _boom_streams.is_empty():
 		return
-	if stream is AudioStreamMP3:
-		stream.loop = false
-	sfx_player.stream = stream
+	var now := Time.get_ticks_msec()
+	if now - _boom_last_ms < 80:
+		return
+	_boom_last_ms = now
+	sfx_player.stream = _boom_streams[randi() % _boom_streams.size()]
 	sfx_player.play()
 
 # Pull the next track from the shuffled queue; refill + reshuffle when empty so
