@@ -152,6 +152,9 @@ animations = [{
 "speed": 8.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fu252"]
+size = Vector2(166.5, 393.5)
+
 [node name="Node2D2" type="Node2D" unique_id=1743793518]
 script = ExtResource("1_rpqi1")
 
@@ -262,6 +265,21 @@ texture = ExtResource("18_i0j58")
 position = Vector2(2, -25)
 collision_layer = 1
 collision_mask = 3
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="." unique_id=399211462]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2" unique_id=1254895945]
+position = Vector2(1327.75, 459.75)
+shape = SubResource("RectangleShape2D_fu252")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="StaticBody2D2" unique_id=1107190021]
+position = Vector2(-1451, 7)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2/StaticBody2D2" unique_id=122071326]
+position = Vector2(1327.75, 459.75)
+shape = SubResource("RectangleShape2D_fu252")
 
 [connection signal="shapeshift" from="." to="CharacterBody2D" method="_on_node_2d_2_shapeshift"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
