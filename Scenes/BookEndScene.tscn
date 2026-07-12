@@ -2,15 +2,11 @@
 
 [ext_resource type="Script" uid="uid://dp6sm1x6xf3hw" path="res://Scenes/book_end_scene.gd" id="1_7xbt5"]
 [ext_resource type="Texture2D" uid="uid://1u2qwy53ik2l" path="res://Assets/Book.png" id="2_7xbt5"]
+[ext_resource type="Texture2D" uid="uid://cljday26d4iqe" path="res://Assets/Background-mayhem-export.png" id="3_7xbt5"]
 [ext_resource type="Script" uid="uid://8i71gb37aacl" path="res://Scenes/camera_2d.gd" id="4_7cs3i"]
 
 [node name="Node2D" type="Node2D" unique_id=444095358]
 script = ExtResource("1_7xbt5")
-
-[node name="Book" type="Sprite2D" parent="." unique_id=1644227400]
-position = Vector2(632, 301.00003)
-scale = Vector2(10, 10)
-texture = ExtResource("2_7xbt5")
 
 [node name="Timer" type="Timer" parent="." unique_id=428846735]
 
@@ -28,6 +24,20 @@ offset_right = 513.0
 offset_bottom = 430.0
 size_flags_horizontal = 4
 size_flags_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=1516162228]
+texture_repeat = 2
+layout_mode = 0
+offset_left = -1144.0
+offset_top = -676.0
+offset_right = 1398.0
+offset_bottom = 1094.0
+texture = ExtResource("3_7xbt5")
+
+[node name="Book" type="Sprite2D" parent="Control" unique_id=1644227400]
+position = Vector2(119, 249.00003)
+scale = Vector2(10, 10)
+texture = ExtResource("2_7xbt5")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="Control" unique_id=1191897059]
 layout_mode = 1
