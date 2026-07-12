@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cda6fmeuu566e"
+path="res://.godot/imported/Graze the Roof.mp3-a6f7de24321754364a21fdaa3475e621.mp3str"
+
+[deps]
+
+source_file="res://music/Graze the Roof.mp3"
+dest_files=["res://.godot/imported/Graze the Roof.mp3-a6f7de24321754364a21fdaa3475e621.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
