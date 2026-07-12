@@ -13,7 +13,7 @@ Right left and up keys to move player
 Shoot = Shoot 
 
 ## How To Play
-To play the game, go to the link here. https://remymorea.itch.io/the-last-one 
+To play the game, go to the link here. https://leafy-axolotl-4bf246.netlify.app/ 
 The game was made in Godot by three young and incredible, developers.
 
 ## Why we made this?
