@@ -6,17 +6,24 @@ The World is industrial and dying, no green left anywhere. Somehow one tree surv
 The fun thing about this game, is you use your voice to play! There are trigger words that are picked up by our system that trigger different events.
 The words are: <br>
 
-W — Shapeshift: = shapeshift/morph <br>
-E — Flight: flight, fly, ascend, rise, up <br>
-Q — 4th Wall: kill <br>
-Right left and up to move with player
+Shapeshift: = shapeshift/morph <br>
+Flight: flight, fly, ascend, rise, up <br>
+4th Wall: kill <br>
+Right left and up keys to move player
 Shoot = Shoot 
 
 ## How To Play
-To play the game, go to the link here. The game was made in Godot by three young and incredible, developers.
+To play the game, go to the link here. https://remymorea.itch.io/the-last-one 
+The game was made in Godot by three young and incredible, developers.
+
+## Why we made this?
+We made this project in a group of three for horizons crux. We tried our best, and didn't get much sleep making this game and poured a lot of love into it.
+
+## Why this game makes a difference
+For every time someone individaully leaves a comment and play 5mins on our game, 10c is donanted to teamtrees by Remy.
 
 
 ## Who did what?
-Santosa made the game menu screen <br>
-Neo made voice controls <br>
-Remy Made the logo and UI Buttons <br>
+Santosa made the game menu screen, controls and more<br>
+Neo made voice controls, expolision animations and more<br>
+Remy Made the logo and UI Buttons and all assets <br>
