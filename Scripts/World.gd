@@ -91,6 +91,25 @@ var voice_unlocked: bool = false    # vars for mic
 var vol_fill: ColorRect
 var vol_peak: float = 0.0
 
+# --- Background music: shuffle all tracks, play through, reshuffle, forever ---
+const MUSIC_TRACKS := [
+	"res://music/Graze the Roof.mp3",
+	"res://music/Loonboon.mp3",
+	"res://music/Ultimate Battle.mp3",
+]
+@export var music_volume_db: float = -8.0
+var music_player: AudioStreamPlayer
+var _music_queue: Array = []
+var _last_track: String = ""
+
+# Boom SFX: play a random one when the runner explodes.
+const BOOM_SFX := [
+	"res://music/minecraft-explosion-green-screen.mp3",
+	"res://music/ultrakill-explosion.mp3",
+]
+@export var sfx_volume_db: float = 0.0
+var sfx_player: AudioStreamPlayer
+
 const HP_BAR_WIDTH := 360.0
 var hp_fill: ColorRect         # hp bar vars 
 
@@ -156,6 +175,7 @@ func _ready() -> void:   # prep var
 	sil_hide = [background, foreground]
 	_setup_juice_ui()
 	_setup_mic()
+	_setup_music()
 	tornado.play()
 	_run_intro()  # tutorial rounds, then hands off to the director
 
@@ -207,6 +227,7 @@ func _process(delta: float) -> void:
 			bomb.position.y = land_y
 			bomb_dropping = false
 			bomb.visible = false
+			_play_boom()  # bomb hit the ground -> explosion
 
 	if runner_moving and not runner_erasing:
 		runner.position.x += runner_speed * delta * runner_dir
@@ -406,6 +427,7 @@ func _on_tree_hitbox_entered(area: Area2D) -> void:
 	if src == bomb and bomb_dropping:
 		bomb_dropping = false
 		bomb.visible = false
+		_play_boom()  # drone bomb explosion
 		damage_tree(bomb_damage)
 	elif src == tornado and tornado_moving and not tornado_hit:
 		tornado_hit = true
@@ -699,6 +721,7 @@ func _burn_tree() -> void:
 	runner_hit = true
 	runner_moving = false
 	damage_tree(runner_damage)
+	_play_boom()
 	# Frame 3 = blowing up, held (no loop).
 	runner.play("boom")
 
@@ -836,6 +859,52 @@ func _setup_juice_ui() -> void:
 	bomber_hp_fill.size = Vector2(BOMBER_BAR_WIDTH, 10)
 	bomber_hp_fill.visible = false
 	layer.add_child(bomber_hp_fill)
+
+
+# Background music player: one AudioStreamPlayer, advanced by its finished signal.
+func _setup_music() -> void:
+	music_player = AudioStreamPlayer.new()
+	music_player.volume_db = music_volume_db
+	music_player.bus = "Master"
+	music_player.finished.connect(_play_next_track)
+	add_child(music_player)
+	_play_next_track()
+
+	# Separate player for SFX so a boom never cuts the music.
+	sfx_player = AudioStreamPlayer.new()
+	sfx_player.volume_db = sfx_volume_db
+	sfx_player.bus = "Master"
+	add_child(sfx_player)
+
+# Play a random boom SFX (runner explosion).
+func _play_boom() -> void:
+	var stream = load(BOOM_SFX[randi() % BOOM_SFX.size()])
+	if stream == null:
+		return
+	if stream is AudioStreamMP3:
+		stream.loop = false
+	sfx_player.stream = stream
+	sfx_player.play()
+
+# Pull the next track from the shuffled queue; refill + reshuffle when empty so
+# it loops forever in a fresh random order (no immediate repeat).
+func _play_next_track() -> void:
+	if _music_queue.is_empty():
+		_music_queue = MUSIC_TRACKS.duplicate()
+		_music_queue.shuffle()
+		# Avoid replaying the same track back-to-back across a reshuffle.
+		if _music_queue.size() > 1 and _music_queue[0] == _last_track:
+			_music_queue.append(_music_queue.pop_front())
+	var path: String = _music_queue.pop_front()
+	var stream = load(path)
+	if stream == null:
+		push_warning("[MUSIC] Could not load %s" % path)
+		return
+	if stream is AudioStreamMP3:
+		stream.loop = false  # playlist advances via finished; don't self-loop
+	_last_track = path
+	music_player.stream = stream
+	music_player.play()
 
 
 func _setup_mic() -> void:
