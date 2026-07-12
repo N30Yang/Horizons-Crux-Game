@@ -8,6 +8,12 @@ const JUMP_VELOCITY = -300.0
 const BIRD_VELOCITY = -5000.0
 var direction1: Vector2 = Vector2.ZERO
 
+# --- Lion hunt ---------------------------------------------------------------
+# In lion form, auto-lunge at a runner when it's in the same screen half AND
+# within 1/3 of the screen width, then maul it (World flings it into the air).
+const LION_POUNCE_MULT := 1.5   # lunge speed = SPEED * this
+const LION_KILL_DIST := 70.0    # close enough to maul (px)
+
 # --- Voice-driven movement state --------------------------------------------
 # Voice is discrete, movement is continuous. A recognized "left"/"right" drives
 # the character for VOICE_MOVE_DURATION seconds unless "stop" cancels it.
@@ -99,8 +105,13 @@ func _physics_process(delta: float) -> void:
 	# Handle jump.
 	if jump_pressed and is_on_floor() and GameManager.currentanimal == "bird":
 		velocity.y = BIRD_VELOCITY
-	
-		
+
+	# Lion form: auto-hunt runners. When hunting, it drives movement this frame.
+	if GameManager.currentanimal == "lion" and _lion_try_hunt():
+		move_and_slide()
+		update_facing_direction()
+		return
+
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	# Keyboard takes priority; fall back to the active voice direction.
@@ -149,10 +160,37 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	update_facing_direction()
 	
+# Lion auto-hunt. Returns true if it took over movement this frame.
+# Triggers only for runners in the same screen half AND within 1/3 screen width.
+func _lion_try_hunt() -> bool:
+	var world = get_parent()
+	if world == null or not world.has_method("lion_maul_runner"):
+		return false
+	if not world.runner_moving or world.runner_erasing:
+		return false
+	var vw := get_viewport_rect().size.x
+	var mid := vw * 0.5
+	var lx := global_position.x
+	var rx := (world.runner as Node2D).global_position.x
+	var same_half := (lx < mid) == (rx < mid)
+	var dx := rx - lx
+	if not same_half or absf(dx) > vw / 3.0:
+		return false
+	# Pounce toward the runner at 1.5x speed.
+	var dir := signf(dx)
+	velocity.x = dir * SPEED * LION_POUNCE_MULT
+	direction1.x = dir
+	sprite.play("lion")
+	# Reached it -> maul + yeet (World handles the kill/fling).
+	if absf(dx) <= LION_KILL_DIST:
+		world.lion_maul_runner()
+	return true
+
+
 func update_facing_direction():
 	if direction1.x > 0:
 		sprite.flip_h = false
-		
+
 	elif direction1.x < 0:
 		sprite.flip_h = true
 

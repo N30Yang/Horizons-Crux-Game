@@ -103,6 +103,7 @@ func _load_default_powers() -> void:
 		"BLOBFISH": {"name": "Blobfish", "keywords": ["blobfish", "blob"]},
 		"BIRD": {"name": "Bird", "keywords": ["bird", "birdie"]},
 		"HUMAN": {"name": "Human", "keywords": ["human", "person"]},
+		"LION": {"name": "Lion", "keywords": ["lion"]},
 		"SHAPESHIFT": {"name": "Shapeshift Random", "keywords": ["shapeshift", "shift", "transform", "morph", "change"]},
 	}
 

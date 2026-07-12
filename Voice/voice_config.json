@@ -52,6 +52,10 @@
 	  "name": "Human",
 	  "keywords": ["human", "person"]
 	},
+	"LION": {
+	  "name": "Lion",
+	  "keywords": ["lion"]
+	},
 	"SHAPESHIFT": {
 	  "name": "Shapeshift Random",
 	  "keywords": ["shapeshift", "shift", "transform", "morph", "change"]

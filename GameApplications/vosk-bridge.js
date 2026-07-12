@@ -42,7 +42,7 @@
 		// --- shapeshift: named animal (-> BEAR/CAPYBARA/BLOBFISH/BIRD/HUMAN) ---
 		// NOTE: capybara/blobfish may not be in the small model's dictionary; if
 		// Vosk ignores them, use a substitute in-dictionary trigger word.
-		"bear", "capybara", "capy", "blobfish", "blob", "bird", "human", "person",
+		"bear", "capybara", "capy", "blobfish", "blob", "bird", "human", "person", "lion",
 		// --- shapeshift: random (-> SHAPESHIFT) ---
 		"shift", "change", "transform", "morph",
 		"[unk]"
