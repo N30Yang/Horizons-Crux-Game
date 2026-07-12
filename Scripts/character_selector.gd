@@ -18,12 +18,12 @@ func _process(delta: float) -> void:
 func _on_texture_button_pressed() -> void:
 	print("hello")
 	GameManager.selected_character_path = "Blondie"
-	get_tree().change_scene_to_file("res://Scenes/BookScene.tscn")
+	get_tree().change_scene_to_file("res://cutscene.tscn")
 	pass # Replace with function body.
 
 
 func _on_texture_button_2_pressed() -> void:
 	GameManager.selected_character_path = "Brownie"
-	get_tree().change_scene_to_file("res://Scenes/BookScene.tscn")
+	get_tree().change_scene_to_file("res://cutscene.tscn")
 	print("hello")
 	pass # Replace with function body.

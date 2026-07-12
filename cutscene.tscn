@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://bhqtq6yjgq3w5"]
+
+[ext_resource type="Script" uid="uid://ivvbskcmna16" path="res://cutscene.gd" id="1_8vcau"]
+[ext_resource type="Texture2D" uid="uid://ck2jhcawmr0ik" path="res://Assets/lorax.png" id="2_bl24s"]
+[ext_resource type="PackedScene" uid="uid://bce1muf7gtls1" path="res://Scenes/character1.tscn" id="3_u4yv4"]
+[ext_resource type="Texture2D" uid="uid://du1plctvwwyan" path="res://Assets/LoraxSpeech.png" id="4_bl24s"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8vcau"]
+size = Vector2(312, 91)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u4yv4"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(0, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p30sb"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(192, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_53jq0"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(384, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3q24f"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(576, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ye5a"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(768, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qcoa3"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(960, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pvbl2"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(1152, 0, 192, 108)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vi1t0"]
+atlas = ExtResource("4_bl24s")
+region = Rect2(1344, 0, 192, 108)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ilkqt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u4yv4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p30sb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_53jq0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3q24f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ye5a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qcoa3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pvbl2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vi1t0")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 0.3
+}]
+
+[node name="Node2D" type="Node2D" unique_id=1922546283]
+script = ExtResource("1_8vcau")
+
+[node name="Lorax" type="Sprite2D" parent="." unique_id=939179060]
+position = Vector2(631, 289.00003)
+scale = Vector2(7, 7)
+texture = ExtResource("2_bl24s")
+
+[node name="CharacterBody2D" parent="." unique_id=962582943 instance=ExtResource("3_u4yv4")]
+
+[node name="Timer" type="Timer" parent="." unique_id=1042723290]
+wait_time = 22.0
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=217092137]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=974075977]
+position = Vector2(141, 630.5)
+shape = SubResource("RectangleShape2D_8vcau")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=705556563]
+position = Vector2(435, 235)
+scale = Vector2(5, 5)
+sprite_frames = SubResource("SpriteFrames_ilkqt")
+frame_progress = 0.36901325
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
