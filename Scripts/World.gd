@@ -539,11 +539,41 @@ func launch_runner() -> void:
 	runner.position.x = -60.0 if from_left else vw + 60.0
 	runner.position.y = get_viewport_rect().size.y * bomb_land_ratio
 	runner.modulate = Color.WHITE
+	runner.rotation = 0.0  # reset in case a lion-yeet left it spun
 	runner.visible = true
 	# Separate frames per direction: 0-1-2 run right, 4-5-6 run left.
 	runner.play("run_right" if runner_dir > 0.0 else "run_left")
 	runner_moving = true
 	runner_hit = false
+
+# Lion form caught the runner: kill it and fling it into the air. Counts as a
+# defeat (runner_hit stays false). Called from character.gd's lion hunt.
+func lion_maul_runner() -> void:
+	if not runner_moving or runner_erasing:
+		return
+	runner_moving = false
+	runner_hit = false  # mauled = defeated (not a tree hit)
+	hit_stop()
+	_yeet_runner()
+	print("[GAME] Lion mauled the runner!")
+
+# Fling the runner up + spin + fade, then hide n reset for the next spawn.
+func _yeet_runner() -> void:
+	if _runner_burn_tween != null and _runner_burn_tween.is_valid():
+		_runner_burn_tween.kill()
+	var tw := create_tween()
+	_runner_burn_tween = tw  # share handle so a relaunch cancels the fling
+	tw.set_parallel(true)
+	tw.tween_property(runner, "position:y", runner.position.y - 650.0, 0.7) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(runner, "position:x", runner.position.x + randf_range(-160.0, 160.0), 0.7)
+	tw.tween_property(runner, "rotation", runner.rotation + TAU * 2.0, 0.7)
+	tw.tween_property(runner, "modulate:a", 0.0, 0.7)
+	tw.chain().tween_callback(func() -> void:
+		runner.visible = false
+		runner.rotation = 0.0
+		runner.modulate = Color.WHITE
+		runner.position.y = get_viewport_rect().size.y * bomb_land_ratio)
 
 # FOURTH WALL power ("erase"/"destroy"/"obliterate"). erase the runner if hes
 # around, otherwise scribble the bomber n take half its hp.
